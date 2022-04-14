@@ -16,7 +16,8 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-
+/*
+// ========= Test for classes Athlete, Competition =======
         ArrayList<Competition> competitionArray = new ArrayList<Competition>();
         // test
         Competition com1 = new Competition("Running", "Sprint", "60");
@@ -32,7 +33,13 @@ public class Main {
         ath1.setCompetitions(com3, competitionArray);
 
         ath1.diaplay();
-
         System.out.println("Number of participating in  Running " + com1.getNumOfParticipate());
+
+ */
+
+// ========== Test Class ReadFromFile =====
+        ReadFromFile.readFile("myFile.csv");
     }
+
+
 }
