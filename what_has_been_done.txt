@@ -1,0 +1,14 @@
+-> Rodrigues:
+-> What i did untill now:
+
+1. created competition class, declared its methods and attributes. The competitions is a separated class.
+2. created athlete class, declared its methods and attributes. (to be done later: group athletes according age)
+3. declared ReadFromClass, a class that can read data from file. The class extract athlete & competitions information
+    from each line from the file & create objects and save them in separate arrays.
+    (to be done later: extract competitions information, create objects automatic and save them to an array)
+4. Sex enum that only define the athlete sex, either F or M.
+
+-> To be done later by my Rodrigues: work with class ReadFromClass to extact competitions information
+   from each line from the file, create objects automatic and save them to an array.
+
+// Rodriguez!
