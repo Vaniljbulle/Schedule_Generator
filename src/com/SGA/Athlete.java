@@ -9,7 +9,7 @@ package com.SGA;
  * -> Some tests in Main.
  * Förbättringar behöver visst göras vid behöv.
  * MVH Rodriguez
- */
+ *///
 
 import java.util.ArrayList;
 

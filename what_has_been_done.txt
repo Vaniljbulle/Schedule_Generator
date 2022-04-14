@@ -11,4 +11,4 @@
 -> To be done later by my Rodrigues: work with class ReadFromClass to extact competitions information
    from each line from the file, create objects automatic and save them to an array.
 
-// Rodriguez!
+// Rodriguez!!

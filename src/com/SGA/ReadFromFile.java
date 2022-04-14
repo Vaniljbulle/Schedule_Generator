@@ -80,7 +80,7 @@ public class ReadFromFile {
         Athlete obj = new Athlete(clup, firstName, lastName, sex, age);
         athletesMemory.add(obj);
 
-        // needed to be done: 1. extract competitions & create objects & add them to competitions memory
+        /// needed to be done: 1. extract competitions & create objects & add them to competitions memory
 
 
 
