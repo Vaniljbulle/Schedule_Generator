@@ -3,6 +3,12 @@ package com.SGA;
 /* test code by Rodriguez ,
  * ville bara veta hur kan man på bästa sätet skapar lämpliga klasser
  * för projectet
+ * What i have done
+ * -> Class for competitions & its functions
+ * -> Class for Athletes & its functions
+ * -> Some tests in Main.
+ * Förbättringar behöver visst göras vid behöv.
+ * MVH Rodriguez
  */
 
 import java.util.ArrayList;
