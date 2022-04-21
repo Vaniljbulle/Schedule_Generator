@@ -14,6 +14,9 @@ public class Main {
         for (Competition tmp: competitions) {
             tmp.getNext();
         }
+
+        Generator generator = new Generator();
+        generator.generate();
         //Scheduler scheduler = new Scheduler();
         //scheduler.generateSchedule("registration-list.csv");
 
