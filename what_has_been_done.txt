@@ -12,3 +12,8 @@
    from each line from the file, create objects automatic and save them to an array.
 
 // Rodriguez!!
+
+2022-04-21 - Vincent K.
+Added Schedule class.
+Added FileHandler class.
+added methods to read/write to file.
