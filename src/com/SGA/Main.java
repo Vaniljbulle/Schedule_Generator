@@ -1,12 +1,23 @@
 package com.SGA;
 
+import java.util.Vector;
+
 public class Main {
 
     public static void main(String[] args) {
-        Scheduler scheduler = new Scheduler();
-        scheduler.generateSchedule("registration-list.csv");
+        Vector<Competition> competitions = new Vector<>();
 
-        testFileHandler();
+        competitions.add(new PoleJumping());
+        competitions.add(new Running60());
+        competitions.add(new Throwing());
+
+        for (Competition tmp: competitions) {
+            tmp.getNext();
+        }
+        //Scheduler scheduler = new Scheduler();
+        //scheduler.generateSchedule("registration-list.csv");
+
+        //testFileHandler();
     }
 
     // Not a unit test, but a test to see if the file handler works

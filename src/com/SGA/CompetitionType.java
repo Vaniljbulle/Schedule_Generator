@@ -1,0 +1,15 @@
+package com.SGA;
+
+public enum CompetitionType {
+    RUNNING60,
+    RUNNING200,
+    RUNNING800,
+    RUNNING1500,
+    RUNNING3000,
+    HURDLES,
+    LONGJUMPING,
+    TRIPLEJUMPING,
+    HIGHJUMPING,
+    POLEJUMPING,
+    THROWING
+}
