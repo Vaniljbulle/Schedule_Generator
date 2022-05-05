@@ -2,7 +2,7 @@ package com.SGA;
 
 public class JumpingPole extends Competition{
     @Override
-    public Vec2 getNext() {
+    public TimeSlot getNext() {
         return super.getNext();
     }
 }

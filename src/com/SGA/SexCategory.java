@@ -3,5 +3,5 @@ package com.SGA;
 public enum SexCategory {
     Male,
     Female,
-    Both
+    Both // When the participant is under 14
 }

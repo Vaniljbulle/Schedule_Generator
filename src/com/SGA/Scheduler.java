@@ -6,6 +6,7 @@ import java.util.Vector;
 
 public class Scheduler {
     private String participantsRaw;
+    HashMap<AgeGroup, HashMap<SexCategory, Competition>> competitions = new HashMap<>();
     Athlete[] athletes;
 
     // Constructor
@@ -28,17 +29,17 @@ public class Scheduler {
     }
 
     private void fillCompetitions() {
+        for (Athlete athlete : athletes) {
+            // Competitor is too young
+            if (athlete.getAge() < 7) continue;
 
-        HashMap<AgeGroup, HashMap<SexCategory, Competition>> competitions = new HashMap<>();
+            HashMap<SexCategory, Competition> tmp = new HashMap<>();
+            if (athlete.getAge() < 15) {
+                tmp.put(SexCategory.Both, new PoleJumping());
 
-        HashMap<SexCategory, Competition> tmp = new HashMap<>();
-        tmp.put(SexCategory.Male, new PoleJumping());
-        competitions.put(AgeGroup.age9_10, tmp);
-
-        for (HashMap<SexCategory, Competition> i: competitions.values()) {
-            for (Competition j : i.values()) {
-                j.getNext();
             }
+            tmp.put(SexCategory.Male, new PoleJumping());
+            competitions.put(AgeGroup.age9_10, tmp);
         }
     }
 

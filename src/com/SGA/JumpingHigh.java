@@ -2,7 +2,7 @@ package com.SGA;
 
 public class JumpingHigh extends Competition{
     @Override
-    public Vec2 getNext() {
+    public TimeSlot getNext() {
         return super.getNext();
     }
 }
