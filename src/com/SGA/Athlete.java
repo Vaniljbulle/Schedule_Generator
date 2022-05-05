@@ -1,21 +1,35 @@
 package com.SGA;
 
-import java.util.HashMap;
-
 public class Athlete {
-    public String firstName;
-    public String lastName;
-    public int age;
-    public HashMap<CompetitionType, ParticipationInfo> participation;
+    private String firstName;
+    private String lastName;
+    private int age;
 
-    public static class ParticipationInfo {
-        public Boolean isParticipating = false;
-        public float recordTime = -1.0f;
+    // Getters and setters
+    public String getFirstName() {
+        return firstName;
+    }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
     }
 
-    Athlete(String _firstName, String _lastName, int _age) {
-        firstName = _firstName;
-        lastName = _lastName;
-        age = _age;
+    Athlete(String ath) {
+        // split string with delimiter ","
+        String[] name = ath.split(",");
+        if (name.length == 15) {
+            System.out.println("valid input");
+        }
     }
 }

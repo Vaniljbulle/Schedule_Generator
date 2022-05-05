@@ -5,20 +5,9 @@ import java.util.Vector;
 public class Main {
 
     public static void main(String[] args) {
-        Vector<Competition> competitions = new Vector<>();
 
-        competitions.add(new PoleJumping());
-        competitions.add(new Running60());
-        competitions.add(new Throwing());
-
-        for (Competition tmp: competitions) {
-            tmp.getNext();
-        }
-
-        Generator generator = new Generator();
-        generator.generate();
-        //Scheduler scheduler = new Scheduler();
-        //scheduler.generateSchedule("registration-list.csv");
+        Scheduler scheduler = new Scheduler();
+        scheduler.generateSchedule("registration-list.csv");
 
         //testFileHandler();
     }
