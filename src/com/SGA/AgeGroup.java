@@ -1,7 +1,7 @@
 package com.SGA;
 
 public enum AgeGroup {
-    ageUnder,
+    age7_8,
     age9_10,
     age11_12,
     age13_14,

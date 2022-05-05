@@ -30,7 +30,14 @@ public class Scheduler {
 
     private void fillCompetitions() {
         for (Athlete athlete : athletes) {
+            // Competitor is too young
+            if (athlete.getAge() < 7) continue;
+
             HashMap<SexCategory, Competition> tmp = new HashMap<>();
+            if (athlete.getAge() < 15) {
+                tmp.put(SexCategory.Both, new PoleJumping());
+
+            }
             tmp.put(SexCategory.Male, new PoleJumping());
             competitions.put(AgeGroup.age9_10, tmp);
         }
