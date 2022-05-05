@@ -5,8 +5,8 @@ import java.util.Vector;
 public class Competition {
     Vector<Integer> athleteIds;
 
-    public Vec2 getNext() {
+    public TimeSlot getNext() {
 
-        return new Vec2();
+        return new TimeSlot();
     }
 }
