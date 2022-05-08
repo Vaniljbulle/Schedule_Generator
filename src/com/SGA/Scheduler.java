@@ -62,6 +62,10 @@ public class Scheduler {
         };
     }
 
+    // Recursive function to add a competitor to a competition
+    // If a key and value does not exist, it is created and the
+    // function is called once again until we can add "athleteID"
+    // to the competition vector
     private void addCompetitor(AgeGroup age, CompetitionType type, SexCategory sex, int athleteID) {
         if (competitions.containsKey(age)) {
             if (competitions.get(age).containsKey(sex)) {
