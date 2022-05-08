@@ -7,6 +7,10 @@ public class Athlete {
     private String lastName;
     private int age;
 
+    public SexCategory getSex() {
+        return sex;
+    }
+
     private SexCategory sex;
     /*
     private double running60;

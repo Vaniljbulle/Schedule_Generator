@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 public class Scheduler {
-    HashMap<AgeGroup, HashMap<SexCategory, Competition>> competitions = new HashMap<>();
+    HashMap<AgeGroup, HashMap<SexCategory, HashMap<CompetitionType, Competition>>> competitions = new HashMap<>();
     private Athlete[] athletes;
 
     // Constructor
@@ -27,20 +27,75 @@ public class Scheduler {
         for (int i = 0; i < participants.length; i++) {
             athletes[i] = new Athlete(participants[i]);
         }
+        fillCompetitions();
+
+    }
+
+    private Competition createCompetitionOfType(CompetitionType type) {
+        return switch (type) {
+            case RUNNING60 -> new Running60();
+            case RUNNING200 -> new Running200();
+            case RUNNING800 -> new Running800();
+            case RUNNING1500 -> new Running1500();
+            case RUNNING3000 -> new Running3000();
+            case HURDLES -> new RunningHurdles();
+            case LONGJUMPING -> new JumpingLong();
+            case TRIPLEJUMPING -> new JumpingTriple();
+            case HIGHJUMPING -> new JumpingHigh();
+            case POLEJUMPING -> new JumpingPole();
+            case THROWING -> new Throwing();
+        };
+    }
+
+    private AgeGroup getAgeGroup(int age) {
+        return switch (age) {
+            case 7, 8 -> AgeGroup.age7_8;
+            case 9, 10 -> AgeGroup.age9_10;
+            case 11, 12 -> AgeGroup.age11_12;
+            case 13, 14 -> AgeGroup.age13_14;
+            case 15, 16 -> AgeGroup.age15_16;
+            case 17, 18 -> AgeGroup.age17_18;
+            default -> AgeGroup.ageAdult;
+        };
+    }
+
+    private void addCompetitor(AgeGroup age, CompetitionType type, SexCategory sex, int athleteID) {
+        if (competitions.containsKey(age)) {
+            if (competitions.get(age).containsKey(sex)) {
+                if (competitions.get(age).get(sex).containsKey(type)) {
+                    competitions.get(age).get(sex).get(type).athleteIds.add(athleteID);
+                    return;
+                } else {
+                    competitions.get(age).get(sex).put(type, createCompetitionOfType(type));
+                }
+            } else {
+                competitions.get(age).put(sex, new HashMap<>());
+            }
+        } else {
+            competitions.put(age, new HashMap<>());
+        }
+        addCompetitor(age, type, sex, athleteID);
     }
 
     private void fillCompetitions() {
-        for (Athlete athlete : athletes) {
+        for (int i = 0; i < athletes.length; i++) {
+            Athlete athlete = athletes[i];
             // Competitor is too young
             if (athlete.getAge() < 7) continue;
 
-            HashMap<SexCategory, Competition> tmp = new HashMap<>();
-            if (athlete.getAge() < 15) {
-                tmp.put(SexCategory.Both, new PoleJumping());
-
+            HashMap<CompetitionType, Double> results = athlete.getCompetitionResults();
+            for (CompetitionType key : CompetitionType.values()) {
+                Double result = results.get(key);
+                if (result != -1) {
+                    int age = athlete.getAge();
+                    AgeGroup ageGroup = getAgeGroup(age);
+                    if (athlete.getAge() < 15) {
+                        addCompetitor(ageGroup, key, SexCategory.Both, i);
+                    } else {
+                        addCompetitor(ageGroup, key, athlete.getSex(), i);
+                    }
+                }
             }
-            tmp.put(SexCategory.Male, new PoleJumping());
-            competitions.put(AgeGroup.age9_10, tmp);
         }
     }
 
