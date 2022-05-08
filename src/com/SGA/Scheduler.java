@@ -31,6 +31,7 @@ public class Scheduler {
 
     }
 
+    // Creates and returns a competition of competitionType "type"
     private Competition createCompetitionOfType(CompetitionType type) {
         return switch (type) {
             case RUNNING60 -> new Running60();
@@ -47,6 +48,8 @@ public class Scheduler {
         };
     }
 
+    // Returns the age group of a participant
+    // Only accurate if the age is not under 7
     private AgeGroup getAgeGroup(int age) {
         return switch (age) {
             case 7, 8 -> AgeGroup.age7_8;
@@ -77,15 +80,19 @@ public class Scheduler {
         addCompetitor(age, type, sex, athleteID);
     }
 
+    // Fills the hashmap with competitions and sorts the athletes'
+    // id's in the right age group, sex category and competition type
     private void fillCompetitions() {
         for (int i = 0; i < athletes.length; i++) {
             Athlete athlete = athletes[i];
             // Competitor is too young
             if (athlete.getAge() < 7) continue;
 
+            // Getting the previous results from the competitor
             HashMap<CompetitionType, Double> results = athlete.getCompetitionResults();
             for (CompetitionType key : CompetitionType.values()) {
                 Double result = results.get(key);
+                // -1 means they do not compete in this competition
                 if (result != -1) {
                     int age = athlete.getAge();
                     AgeGroup ageGroup = getAgeGroup(age);
