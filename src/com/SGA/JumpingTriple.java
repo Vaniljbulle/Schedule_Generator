@@ -1,9 +1,14 @@
 package com.SGA;
 
-public class JumpingTriple extends Competition {
+import java.util.Vector;
 
-    public TimeSlot getNext() {
-        System.out.println("Jumping Triple");
+public class JumpingTriple extends Competition {
+    @Override
+    public void calculateGroups() {
+
+    }
+    @Override
+    public Vector<Event> getNext() {
         return super.getNext();
     }
 }

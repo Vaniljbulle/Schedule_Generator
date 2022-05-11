@@ -1,10 +1,14 @@
 package com.SGA;
 
-public class Running1500 extends Competition{
+import java.util.Vector;
 
+public class Running1500 extends Competition{
     @Override
-    public TimeSlot getNext() {
-        System.out.println("Running200");
+    public void calculateGroups() {
+
+    }
+    @Override
+    public Vector<Event> getNext() {
         return super.getNext();
     }
 }

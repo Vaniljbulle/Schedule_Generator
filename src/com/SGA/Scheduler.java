@@ -15,6 +15,7 @@ public class Scheduler {
     // Generate schedule
     public void generateSchedule(String filePath) {
         initializeAthletes(filePath);
+        fillCompetitions();
     }
 
     private void initializeAthletes(String filePath) {
@@ -27,8 +28,6 @@ public class Scheduler {
         for (int i = 0; i < participants.length; i++) {
             athletes[i] = new Athlete(participants[i]);
         }
-        fillCompetitions();
-
     }
 
     // Creates and returns a competition of competitionType "type"
