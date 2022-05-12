@@ -5,7 +5,7 @@ import java.util.Vector;
 public class JumpingHigh extends Competition {
     @Override
     public void calculateGroups() {
-
+        competitionType = CompetitionType.HIGHJUMPING;
     }
 
     @Override

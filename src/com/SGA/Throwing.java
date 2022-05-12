@@ -5,6 +5,7 @@ import java.util.Vector;
 public class Throwing extends Competition {
     @Override
     public void calculateGroups() {
+        competitionType = CompetitionType.THROWING;
 
     }
 

@@ -7,15 +7,91 @@ import java.util.Vector;
 public class Scheduler {
     HashMap<AgeGroup, HashMap<SexCategory, HashMap<CompetitionType, Competition>>> competitions = new HashMap<>();
     private Athlete[] athletes;
+    HashMap<Station, Vector<Vector<Event>>> schedule = new HashMap<>();
 
     // Constructor
     public Scheduler() {
+    }
+
+
+    private Station getCompetitionStation(CompetitionType type) {
+        return switch (type) {
+            case RUNNING60, HURDLES -> Station.SPRINTLINE;
+            case RUNNING200, RUNNING800, RUNNING1500, RUNNING3000 -> Station.RUNNINGCIRCLE;
+            case LONGJUMPING, TRIPLEJUMPING -> Station.LONGTRIPLEJUMP;
+            case HIGHJUMPING, POLEJUMPING -> Station.HIGHJUMP;
+            case THROWING -> Station.SHOTTHROWING;
+        };
+
+    }
+
+    private void addToSchedule(Vector<Event> events) {
+        for (int i = 0; i < events.size(); i++) {
+            Station station = getCompetitionStation(events.get(i).competitionType);
+            int size = schedule.get(station).size();
+            int chosenStation = i % size;
+            int eventsInVector = schedule.get(station).get(chosenStation).size();
+
+            if (eventsInVector == 0) {
+                events.get(i).startTime = 0;
+            } else {
+                Event lastEvent = schedule.get(station).get(chosenStation).get(eventsInVector - 1);
+                events.get(i).startTime = lastEvent.startTime + lastEvent.duration;
+            }
+
+            int firstAthleteIndex = events.get(i).participants.get(0);
+
+            events.get(i).ageGroup = getAgeGroup(athletes[firstAthleteIndex].getAge());
+            events.get(i).station = station;
+            events.get(i).stationIndex = chosenStation;
+
+            if (athletes[firstAthleteIndex].getAge() < 15) {
+                events.get(i).sexCategory = SexCategory.Both;
+            } else {
+                events.get(i).sexCategory = athletes[firstAthleteIndex].getSex();
+            }
+
+            schedule.get(station).get(chosenStation).add(events.get(i));
+        }
     }
 
     // Generate schedule
     public void generateSchedule(String filePath) {
         initializeAthletes(filePath);
         fillCompetitions();
+        for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
+            for (HashMap<CompetitionType, Competition> sex : age.values()) {
+                for (Competition type : sex.values()) {
+                    type.calculateGroups();
+                }
+            }
+        }
+
+        for (Station station : Station.values())
+            schedule.put(station, new Vector<>());
+        schedule.get(Station.RUNNINGCIRCLE).add(new Vector<>());
+        schedule.get(Station.SPRINTLINE).add(new Vector<>());
+        schedule.get(Station.LONGTRIPLEJUMP).add(new Vector<>());
+        schedule.get(Station.LONGTRIPLEJUMP).add(new Vector<>());
+        schedule.get(Station.HIGHJUMP).add(new Vector<>());
+        schedule.get(Station.HIGHJUMP).add(new Vector<>());
+        schedule.get(Station.POLEVAULT).add(new Vector<>());
+        schedule.get(Station.SHOTTHROWING).add(new Vector<>());
+        schedule.get(Station.SHOTTHROWING).add(new Vector<>());
+        schedule.get(Station.AWARDCEREMONYAREA).add(new Vector<>());
+
+        for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
+            for (HashMap<CompetitionType, Competition> sex : age.values()) {
+                for (Competition type : sex.values()) {
+                    while (true) {
+                        Vector<Event> events = type.getNext();
+                        if (events.size() == 0) break;
+                        addToSchedule(events);
+                    }
+                }
+            }
+        }
+
     }
 
     private void initializeAthletes(String filePath) {
