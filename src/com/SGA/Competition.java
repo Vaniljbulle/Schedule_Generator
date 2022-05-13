@@ -27,4 +27,21 @@ abstract public class Competition {
         getterIndex++;
         return events;
     }
+
+    public void calculateDuration(Athlete[] athletes) {
+        double highest = 0;
+        double tmp = 0;
+        // get the highest value
+        for (int i = 0; i < athleteIds.size(); i++) {
+            if (athletes[i].getCompetitionResults().containsKey(competitionType)) {
+                tmp = athletes[i].getCompetitionResults().get(competitionType);
+            }
+            if (tmp > highest) // checks if we get higher value
+                highest = tmp;
+        }
+
+        duration = (int) highest;
+        duration = (int) Math.ceil(1.1 * duration / 60.0);
+    }
+
 }

@@ -119,4 +119,13 @@ public class Athlete {
         }
         return result;
     }
+
+    public void printAthleteInformation(){
+        System.out.println("First Name : " + this.firstName);
+        System.out.println("Last Name  : " + this.lastName );
+        System.out.println("Sex        : " + this.sex);
+        System.out.println("Results    : " + this.competitionResults);
+
+    }
+
 }
