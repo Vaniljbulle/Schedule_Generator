@@ -13,7 +13,7 @@ public class Athlete {
 
     private SexCategory sex;
 
-    private HashMap<CompetitionType, Double> competitionResults;
+    private HashMap<CompetitionType, Double> competitionResults = new HashMap<>();
 
 
     // Getters and setters

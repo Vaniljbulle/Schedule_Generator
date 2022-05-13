@@ -7,7 +7,9 @@ public class Event {
     public Station station;
     public int stationIndex;
     public Vector<Integer> participants = new Vector<>();
+    public int day;
     public int startTime;
+    public int endTime;
     public int duration;
     // Priority index is used for sorting events, we give finals the highest value, which will inform the scheduler
     // that this event needs to happen after all similar events with lower priorityIndex.

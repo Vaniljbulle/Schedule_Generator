@@ -9,6 +9,10 @@ public class JumpingHigh extends Competition {
     }
 
     @Override
+    public void calculateDuration(Athlete[] athletes) {
+        duration = 1;
+    }
+    @Override
     public Vector<Event> getNext() {
         return super.getNext();
     }

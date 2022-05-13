@@ -10,6 +10,10 @@ public class Scheduler {
     private Athlete[] athletes;
     HashMap<Station, Vector<Vector<Event>>> schedule = new HashMap<>();
 
+    private int breakTime = 5;
+    private int startTimeOfTheDay = 420; // 7:00
+    private int endTimeOfTheDay = 1260; // 21:00
+
     // Constructor
     public Scheduler() {
     }
@@ -26,6 +30,71 @@ public class Scheduler {
 
     }
 
+    // Returns whether the event times collide
+    private boolean doesCollide(Event event1, Event event2) {
+        return event1.day == event2.day && event1.endTime > event2.startTime && event1.startTime < event2.endTime;
+    }
+
+    // Returns whether the events have any of the same athletes
+    private boolean hasOverlappingAthletes(Event event1, Event event2) {
+        for (int a1 : event1.participants) {
+            for (int a2 : event2.participants) {
+                if (a1 == a2) return true;
+            }
+        }
+        return false;
+    }
+
+
+    private void overlappingGeneral(Event newEvent, Event otherEvent) {
+        if (hasOverlappingAthletes(otherEvent, newEvent)) {
+            newEvent.startTime = otherEvent.endTime + breakTime;
+            newEvent.endTime = newEvent.startTime + newEvent.duration;
+        }
+    }
+
+    private void moveIfOverlapGeneral(Event newEvent) {
+        for (Vector<Vector<Event>> stations : schedule.values()) {
+            for (Vector<Event> events : stations) {
+                for (Event event : events) {
+                    if (doesCollide(event, newEvent)) {
+                        overlappingGeneral(newEvent, event);
+                    }
+                }
+            }
+        }
+    }
+
+    private void overlappingOwnStation(Event newEvent, Event otherEvent) {
+        if (hasOverlappingAthletes(otherEvent, newEvent))
+            newEvent.startTime = otherEvent.endTime + breakTime;
+        else
+            newEvent.startTime = otherEvent.endTime;
+        newEvent.endTime = newEvent.startTime + newEvent.duration;
+    }
+
+    private void moveIfOverlapOwnStation(Event newEvent) {
+        for (Vector<Event> events : schedule.get(newEvent.station)) {
+            for (Event event : events) {
+                if (event.stationIndex == newEvent.stationIndex) {
+                    if (doesCollide(event, newEvent) || event.priorityIndex < newEvent.priorityIndex) {
+                        overlappingOwnStation(newEvent, event);
+                    }
+                } else {
+                    if (event.priorityIndex < newEvent.priorityIndex) {
+                        overlappingOwnStation(newEvent, event);
+                    }
+                }
+            }
+        }
+    }
+
+    private void findAvailablePosition(Event newEvent) {
+        moveIfOverlapOwnStation(newEvent);
+        moveIfOverlapGeneral(newEvent);
+    }
+// int [] , [0][min]
+
     private void addToSchedule(Vector<Event> events) {
         for (int i = 0; i < events.size(); i++) {
             Station station = getCompetitionStation(events.get(i).competitionType);
@@ -33,12 +102,13 @@ public class Scheduler {
             int chosenStation = i % size;
             int eventsInVector = schedule.get(station).get(chosenStation).size();
 
-            if (eventsInVector == 0) {
-                events.get(i).startTime = 0;
-            } else {
-                Event lastEvent = schedule.get(station).get(chosenStation).get(eventsInVector - 1);
-                events.get(i).startTime = lastEvent.startTime + lastEvent.duration;
-            }
+            events.get(i).startTime = 0;
+//            if (eventsInVector == 0) {
+//            } else {
+//                Event lastEvent = schedule.get(station).get(chosenStation).get(eventsInVector - 1);
+//                events.get(i).startTime = lastEvent.startTime + lastEvent.duration;
+//            }
+            events.get(i).endTime = events.get(i).startTime + events.get(i).duration;
 
             int firstAthleteIndex = events.get(i).participants.get(0);
 
@@ -52,6 +122,8 @@ public class Scheduler {
                 events.get(i).sexCategory = athletes[firstAthleteIndex].getSex();
             }
 
+            findAvailablePosition(events.get(i));
+
             schedule.get(station).get(chosenStation).add(events.get(i));
         }
     }
@@ -64,6 +136,7 @@ public class Scheduler {
             for (HashMap<CompetitionType, Competition> sex : age.values()) {
                 for (Competition type : sex.values()) {
                     type.calculateGroups();
+                    type.calculateDuration(athletes);
                 }
             }
         }

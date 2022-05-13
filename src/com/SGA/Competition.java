@@ -13,6 +13,7 @@ abstract public class Competition {
 
     public Vector<Event> getNext() {
         if (getterIndex > qualifierGroups.size() - 1) return new Vector<>();
+        //calculateDuration();
         Vector<Event> events = new Vector<>();
         for (int i = 0; i < qualifierGroups.get(getterIndex).size(); i++) {
             Event tmpEvent = new Event();
