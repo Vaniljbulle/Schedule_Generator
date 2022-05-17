@@ -18,7 +18,7 @@ public class Scheduler {
     public Scheduler() {
     }
 
-
+    // Returns the station that fits the CompetitionType
     private Station getCompetitionStation(CompetitionType type) {
         return switch (type) {
             case RUNNING60, HURDLES -> Station.SPRINTLINE;
@@ -45,7 +45,8 @@ public class Scheduler {
         return false;
     }
 
-
+    // if newEvent and otherEvent share any participants:
+    // Moves newEvent's timeslot to breakTime minutes after otherEvent's endTime
     private void overlappingGeneral(Event newEvent, Event otherEvent) {
         if (hasOverlappingAthletes(otherEvent, newEvent)) {
             newEvent.startTime = otherEvent.endTime + breakTime;
@@ -53,6 +54,7 @@ public class Scheduler {
         }
     }
 
+    // Checking if newEvent collide with any other event, then adjust timeslot accordingly
     private void moveIfOverlapGeneral(Event newEvent) {
         for (Vector<Vector<Event>> stations : schedule.values()) {
             for (Vector<Event> events : stations) {
@@ -65,6 +67,9 @@ public class Scheduler {
         }
     }
 
+    // if newEvent and otherEvent share any participants:
+    // Moves newEvent's timeslot to breakTime minutes after otherEvent's endTime
+    // else: Moves newEvent's timeslot to right after otherEvent's endTime
     private void overlappingOwnStation(Event newEvent, Event otherEvent) {
         if (hasOverlappingAthletes(otherEvent, newEvent))
             newEvent.startTime = otherEvent.endTime + breakTime;
@@ -73,6 +78,7 @@ public class Scheduler {
         newEvent.endTime = newEvent.startTime + newEvent.duration;
     }
 
+    // Checking if newEvent collide with any other event in its station, then adjust timeslot accordingly
     private void moveIfOverlapOwnStation(Event newEvent) {
         for (Vector<Event> events : schedule.get(newEvent.station)) {
             for (Event event : events) {
@@ -89,25 +95,20 @@ public class Scheduler {
         }
     }
 
+    // Finds an available position in the schedule for a new event
     private void findAvailablePosition(Event newEvent) {
         moveIfOverlapOwnStation(newEvent);
         moveIfOverlapGeneral(newEvent);
     }
-// int [] , [0][min]
 
+    // Adds all events the vector to the schedule
     private void addToSchedule(Vector<Event> events) {
         for (int i = 0; i < events.size(); i++) {
             Station station = getCompetitionStation(events.get(i).competitionType);
             int size = schedule.get(station).size();
             int chosenStation = i % size;
-            int eventsInVector = schedule.get(station).get(chosenStation).size();
 
-            events.get(i).startTime = 0;
-//            if (eventsInVector == 0) {
-//            } else {
-//                Event lastEvent = schedule.get(station).get(chosenStation).get(eventsInVector - 1);
-//                events.get(i).startTime = lastEvent.startTime + lastEvent.duration;
-//            }
+            events.get(i).startTime = startTimeOfTheDay;
             events.get(i).endTime = events.get(i).startTime + events.get(i).duration;
 
             int firstAthleteIndex = events.get(i).participants.get(0);
@@ -128,10 +129,8 @@ public class Scheduler {
         }
     }
 
-    // Generate schedule
-    public void generateSchedule(String filePath) {
-        initializeAthletes(filePath);
-        fillCompetitions();
+    // Calculates groups and duration for all competitions
+    private void initialiseCompetitions() {
         for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
             for (HashMap<CompetitionType, Competition> sex : age.values()) {
                 for (Competition type : sex.values()) {
@@ -140,7 +139,10 @@ public class Scheduler {
                 }
             }
         }
+    }
 
+    // Adds all stations to the schedule
+    private void initialiseStations() {
         for (Station station : Station.values())
             schedule.put(station, new Vector<>());
         schedule.get(Station.RUNNINGCIRCLE).add(new Vector<>());
@@ -153,7 +155,10 @@ public class Scheduler {
         schedule.get(Station.SHOTTHROWING).add(new Vector<>());
         schedule.get(Station.SHOTTHROWING).add(new Vector<>());
         schedule.get(Station.AWARDCEREMONYAREA).add(new Vector<>());
+    }
 
+    // Adds all events to the schedule
+    private void addAllEvents() {
         for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
             for (HashMap<CompetitionType, Competition> sex : age.values()) {
                 for (Competition type : sex.values()) {
@@ -165,7 +170,15 @@ public class Scheduler {
                 }
             }
         }
+    }
 
+    // Generate schedule
+    public void generateSchedule(String filePath) {
+        initializeAthletes(filePath);
+        fillCompetitions();
+        initialiseCompetitions();
+        initialiseStations();
+        addAllEvents();
     }
 
     private void initializeAthletes(String filePath) {
