@@ -282,11 +282,17 @@ public class Scheduler {
 
     //Translate Time From Minutes To Houres && minutes
     public int[] translateTime(int timeInMinutes) {
-        int[] time = {0, 0}; // index[0] = houres , indes[1] = minutes
-        time[0] = (int) timeInMinutes / 60;
-        time[1] = timeInMinutes % 60;
+        int [] time = {0, 0, 0};
 
-        System.out.printf("Time = " + time[0] + ":" + time[1]);
+        while(timeInMinutes > 1260) {
+            time[0]++;
+            timeInMinutes -= 840;
+        }
+        time[1] = timeInMinutes / 60;
+        time[2] = timeInMinutes % 60;
+
+        System.out.println("Day = " + time[0] + " Time " + time[1] + ":" +time[2]);
+
 
         return time;
     }
