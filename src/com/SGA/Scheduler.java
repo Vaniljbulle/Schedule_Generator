@@ -13,6 +13,7 @@ public class Scheduler {
     private int breakTime = 5;
     private int startTimeOfTheDay = 420; // 7:00
     private int endTimeOfTheDay = 1260; // 21:00
+    private int oneDayInMinutes = 1440; // 24:00
 
     // Constructor
     public Scheduler() {
