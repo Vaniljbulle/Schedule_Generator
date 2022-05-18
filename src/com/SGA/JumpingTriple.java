@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class JumpingTriple extends Competition {
     @Override
-    public void calculateGroups() {
+    public void calculateGroups(Athlete[] athletes) {
         competitionType = CompetitionType.TRIPLEJUMPING;
         Vector<Vector<Integer>> groups = new Vector<>();
         for (int id : athleteIds) {

@@ -5,7 +5,7 @@ import java.lang.Math;
 
 public class Running60 extends Competition {
     @Override
-    public void calculateGroups() {
+    public void calculateGroups(Athlete[] athletes) {
         competitionType = CompetitionType.RUNNING60;
         int participantsPerEvent = 8;
         int numOfAthletes = athleteIds.size();

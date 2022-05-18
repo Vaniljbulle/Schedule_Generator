@@ -25,7 +25,8 @@ public class Scheduler {
             case RUNNING60, HURDLES -> Station.SPRINTLINE;
             case RUNNING200, RUNNING800, RUNNING1500, RUNNING3000 -> Station.RUNNINGCIRCLE;
             case LONGJUMPING, TRIPLEJUMPING -> Station.LONGTRIPLEJUMP;
-            case HIGHJUMPING, POLEJUMPING -> Station.HIGHJUMP;
+            case HIGHJUMPING -> Station.HIGHJUMP;
+            case POLEJUMPING -> Station.POLEVAULT;
             case THROWING -> Station.SHOTTHROWING;
         };
 
@@ -135,7 +136,7 @@ public class Scheduler {
         for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
             for (HashMap<CompetitionType, Competition> sex : age.values()) {
                 for (Competition type : sex.values()) {
-                    type.calculateGroups();
+                    type.calculateGroups(athletes);
                     type.calculateDuration(athletes);
                 }
             }

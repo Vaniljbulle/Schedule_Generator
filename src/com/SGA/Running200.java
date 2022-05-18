@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class Running200 extends Competition{
     @Override
-    public void calculateGroups() {
+    public void calculateGroups(Athlete[] athletes) {
         competitionType = CompetitionType.RUNNING200;
         int participantsPerEvent = 6;
         int numOfAthletes = athleteIds.size();

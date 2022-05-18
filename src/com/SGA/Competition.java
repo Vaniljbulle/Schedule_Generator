@@ -9,7 +9,7 @@ abstract public class Competition {
     protected int duration = 10;
     protected CompetitionType competitionType;
 
-    abstract public void calculateGroups();
+    abstract public void calculateGroups(Athlete[] athletes);
 
     public Vector<Event> getNext() {
         if (getterIndex > qualifierGroups.size() - 1) return new Vector<>();
