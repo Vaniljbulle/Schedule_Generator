@@ -1,7 +1,6 @@
 package com.SGA;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -181,6 +180,8 @@ public class Scheduler {
         initialiseCompetitions();
         initialiseStations();
         addAllEvents();
+
+        generateCSV();
     }
 
     private void initializeAthletes(String filePath) {
@@ -292,10 +293,88 @@ public class Scheduler {
         time[1] = timeInMinutes / 60;
         time[2] = timeInMinutes % 60;
 
-        System.out.println("Day = " + time[0] + " Time " + time[1] + ":" +time[2]);
+        //System.out.println("Day = " + time[0] + " Time " + time[1] + ":" +time[2]);
 
 
         return time;
     }
 
+
+    private void generateCSV() {
+        StringBuilder csv = new StringBuilder();
+
+        Vector<Event> runningCircle = new Vector<>(schedule.get(Station.RUNNINGCIRCLE).get(0));
+        sortEvents(runningCircle);
+
+
+        Vector<String> templines = new Vector<>();
+        int[] lastTime = {0,0};
+        for (Event event : runningCircle) {
+            String temp = "";
+            int[] timeStart = translateTime(event.startTime);
+            if (timeStart[1] == lastTime[0] && timeStart[2] == lastTime[1]) {
+                temp += "x";
+            }
+            int[] timeEnd = translateTime(event.endTime);
+            temp += (event.competitionType.toString()) + (": Day ") + (timeStart[0]) + (" Time ") + (String.format("%02d", timeStart[1])) + (":") + (String.format("%02d", timeStart[2])) + (" - ") + (String.format("%02d", timeEnd[1])) + (":") + (String.format("%02d", timeEnd[2]));
+            temp += (" ") + (event.ageGroup.toString());
+            temp += (" Participants: ");
+            for (int i = 0; i < event.participants.size(); i++) {
+                temp += (athletes[event.participants.get(i)].getFirstName()) + (", ");
+            }
+            lastTime[0] = timeStart[1];
+            lastTime[1] = timeStart[2];
+            templines.add(temp);
+        }
+
+        // Loop through vector
+        for (String templine : templines) {
+            // Check if first character is "x"
+            if (templine.charAt(0) == 'x') {
+                // Duplicate start time
+                System.err.println(templine);
+            } else {
+                System.out.println(templine);
+            }
+        }
+
+        /*
+        int[] lastTime = {0,0};
+        for (Event event : runningCircle) {
+            int[] timeStart = translateTime(event.startTime);
+            if (timeStart[1] == lastTime[0] && timeStart[2] == lastTime[1]) {
+                csv.append("x");
+            }
+            int[] timeEnd = translateTime(event.endTime);
+            csv.append(event.competitionType.toString()).append(": Day ").append(timeStart[0]).append(" Time ").append(String.format("%02d", timeStart[1])).append(":").append(String.format("%02d", timeStart[2])).append(" - ").append(String.format("%02d", timeEnd[1])).append(":").append(String.format("%02d", timeEnd[2]));
+            csv.append(" ").append(event.ageGroup.toString());
+            csv.append(" Participants: ");
+            for (int i = 0; i < event.participants.size(); i++) {
+                csv.append(athletes[event.participants.get(i)].getFirstName()).append(", ");
+            }
+            csv.append("\n");
+            lastTime[0] = timeStart[1];
+            lastTime[1] = timeStart[2];
+        }
+        */
+
+
+
+
+        //System.out.println(csv.toString());
+
+    }
+
+    // Bubble sort
+    private void sortEvents(Vector<Event> events) {
+        for (int i = 0; i < events.size(); i++) {
+            for (int j = 0; j < events.size() - 1; j++) {
+                if (events.get(j).startTime > events.get(j + 1).startTime) {
+                    Event temp = events.get(j);
+                    events.set(j, events.get(j + 1));
+                    events.set(j + 1, temp);
+                }
+            }
+        }
+    }
 }
