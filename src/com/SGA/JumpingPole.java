@@ -8,6 +8,9 @@ public class JumpingPole extends Competition {
     private final Double recordMultiplier = 1.1;
     private final int startHeight = 1;
 
+    // WARNING!!!
+    // Previously generated 10.8k groups,
+    // might need to change the starting height to avoid having people jump 100+ times
     @Override
     public void calculateGroups(Athlete[] athletes) {
         competitionType = CompetitionType.POLEJUMPING;
