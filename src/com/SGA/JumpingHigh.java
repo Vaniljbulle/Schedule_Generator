@@ -6,7 +6,8 @@ public class JumpingHigh extends Competition {
     private double highestRecord = 0;
     private Vector<Double> personalRecords = new Vector<>();
     private final Double recordMultiplier = 1.1;
-    private final int startHeight = 1;
+    private double startHeight = 20; // High value so it will definitely override the value in calculateGroups
+    private final double lowestMultiplier = 0.9;
 
     @Override
     public void calculateGroups(Athlete[] athletes) {
@@ -17,10 +18,13 @@ public class JumpingHigh extends Competition {
             personalRecords.add(highest);
             if (highest > highestRecord)
                 highestRecord = highest;
+            if (highest < startHeight)
+                startHeight = highest;
         }
 
         int slightlyAboveHighest = (int) ((float) highestRecord * recordMultiplier * 100.0);
-        for (int i = (int)startHeight; i < slightlyAboveHighest; i += 5) {
+        int slightlyBelowLowest = (int) ((float) startHeight * lowestMultiplier * 100.0);
+        for (int i = (int) slightlyBelowLowest; i < slightlyAboveHighest; i += 5) {
             Vector<Vector<Integer>> groups = new Vector<>();
             for (int k = 0; k < athleteIds.size(); k++) {
                 int slightlyAboveRecord = (int) (personalRecords.get(k) * recordMultiplier * 100.0);

@@ -8,7 +8,7 @@ public class Scheduler {
     HashMap<AgeGroup, HashMap<SexCategory, HashMap<CompetitionType, Competition>>> competitions = new HashMap<>();
     private Athlete[] athletes;
     HashMap<Station, Vector<Vector<Event>>> schedule = new HashMap<>();
-
+    Vector<Event> allEvents = new Vector<>();
     private int breakTime = 5;
     private int startTimeOfTheDay = 420; // 7:00
     private int endTimeOfTheDay = 1260; // 21:00
@@ -84,11 +84,12 @@ public class Scheduler {
         for (Vector<Event> events : schedule.get(newEvent.station)) {
             for (Event event : events) {
                 if (event.stationIndex == newEvent.stationIndex) {
-                    if (doesCollide(event, newEvent) || event.priorityIndex < newEvent.priorityIndex) {
+                    if (doesCollide(event, newEvent) ||
+                            (event.priorityIndex < newEvent.priorityIndex && event.startTime > newEvent.endTime)) {
                         overlappingOwnStation(newEvent, event);
                     }
                 } else {
-                    if (event.priorityIndex < newEvent.priorityIndex) {
+                    if (event.priorityIndex < newEvent.priorityIndex && event.startTime > newEvent.endTime) {
                         overlappingOwnStation(newEvent, event);
                     }
                 }
@@ -96,10 +97,32 @@ public class Scheduler {
         }
     }
 
+    private void moveIfOverlap(Event newEvent) {
+        for (Event event : allEvents) {
+            if (getCompetitionStation(event.competitionType) == getCompetitionStation(newEvent.competitionType)) {
+                if (event.stationIndex == newEvent.stationIndex) {
+                    if (doesCollide(event, newEvent) ||
+                            (event.priorityIndex < newEvent.priorityIndex)) {
+                        overlappingOwnStation(newEvent, event);
+                    }
+                } else {
+                    if (event.priorityIndex < newEvent.priorityIndex) {
+                        overlappingGeneral(newEvent, event);
+                    }
+                }
+            } else {
+                if (doesCollide(event, newEvent)) {
+                    overlappingGeneral(newEvent, event);
+                }
+            }
+        }
+    }
+
     // Finds an available position in the schedule for a new event
     private void findAvailablePosition(Event newEvent) {
-        moveIfOverlapOwnStation(newEvent);
-        moveIfOverlapGeneral(newEvent);
+        //moveIfOverlapOwnStation(newEvent);
+        //moveIfOverlapGeneral(newEvent);
+        moveIfOverlap(newEvent);
     }
 
     // Adds all events the vector to the schedule
@@ -127,6 +150,8 @@ public class Scheduler {
             findAvailablePosition(events.get(i));
 
             schedule.get(station).get(chosenStation).add(events.get(i));
+            allEvents.add(events.get(i));
+            sortEvents2(allEvents);
         }
     }
 
@@ -346,7 +371,7 @@ public class Scheduler {
             // Check if first character is "x"
             if (templine.charAt(0) == 'x') {
                 // Duplicate start time
-                System.err.println(templine);
+                System.out.println(templine);
             } else {
                 System.out.println(templine);
             }
