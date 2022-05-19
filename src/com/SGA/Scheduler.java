@@ -359,8 +359,6 @@ public class Scheduler {
         */
 
 
-
-
         //System.out.println(csv.toString());
 
     }
@@ -377,4 +375,18 @@ public class Scheduler {
             }
         }
     }
+
+    // Insertion sort
+    private void sortEvents2(Vector<Event> events) {
+        for (int i = 0; i < events.size(); i++) {
+            Event temp = events.get(i);
+            int j = i;
+            while (j > 0 && events.get(j - 1).startTime > temp.startTime) {
+                events.set(j, events.get(j - 1));
+                j--;
+            }
+            events.set(j, temp);
+        }
+    }
+
 }
