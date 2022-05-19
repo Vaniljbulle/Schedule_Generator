@@ -284,9 +284,9 @@ public class Scheduler {
 
     //Translate Time From Minutes To Houres && minutes
     public int[] translateTime(int timeInMinutes) {
-        int [] time = {0, 0, 0};
+        int[] time = {0, 0, 0};
 
-        while(timeInMinutes > 1260) {
+        while (timeInMinutes > 1260) {
             time[0]++;
             timeInMinutes -= 840;
         }
@@ -304,28 +304,42 @@ public class Scheduler {
         StringBuilder csv = new StringBuilder();
 
         Vector<Event> runningCircle = new Vector<>(schedule.get(Station.RUNNINGCIRCLE).get(0));
+        Vector<Event> longTripleJump = new Vector<>(schedule.get(Station.LONGTRIPLEJUMP).get(0));
+        Vector<Event> highJump = new Vector<>(schedule.get(Station.HIGHJUMP).get(0));
+        Vector<Event> shotThrow = new Vector<>(schedule.get(Station.SHOTTHROWING).get(0));
+        Vector<Event> poleVault = new Vector<>(schedule.get(Station.POLEVAULT).get(0));
+        Vector<Event> sprintLine = new Vector<>(schedule.get(Station.SPRINTLINE).get(0));
+        Vector<Event> awards = new Vector<>(schedule.get(Station.AWARDCEREMONYAREA).get(0));
         sortEvents(runningCircle);
+        sortEvents(longTripleJump);
+        sortEvents(highJump);
+        sortEvents(shotThrow);
+        sortEvents(poleVault);
+        sortEvents(sprintLine);
+        sortEvents(awards);
 
+
+        StringBuilder groups = new StringBuilder();
 
         Vector<String> templines = new Vector<>();
-        int[] lastTime = {0,0};
-        for (Event event : runningCircle) {
-            String temp = "";
-            int[] timeStart = translateTime(event.startTime);
-            if (timeStart[1] == lastTime[0] && timeStart[2] == lastTime[1]) {
-                temp += "x";
-            }
-            int[] timeEnd = translateTime(event.endTime);
-            temp += (event.competitionType.toString()) + (": Day ") + (timeStart[0]) + (" Time ") + (String.format("%02d", timeStart[1])) + (":") + (String.format("%02d", timeStart[2])) + (" - ") + (String.format("%02d", timeEnd[1])) + (":") + (String.format("%02d", timeEnd[2]));
-            temp += (" ") + (event.ageGroup.toString());
-            temp += (" Participants: ");
-            for (int i = 0; i < event.participants.size(); i++) {
-                temp += (athletes[event.participants.get(i)].getFirstName()) + (", ");
-            }
-            lastTime[0] = timeStart[1];
-            lastTime[1] = timeStart[2];
-            templines.add(temp);
-        }
+        //int[] lastTime = {0,0};
+        for (Event event : runningCircle)
+            templines.add(lineIt(event));
+
+        for (Event event : longTripleJump)
+            templines.add(lineIt(event));
+
+        for (Event event : highJump)
+            templines.add(lineIt(event));
+
+        for (Event event : shotThrow)
+            templines.add(lineIt(event));
+
+        for (Event event : poleVault)
+            templines.add(lineIt(event));
+
+        for (Event event : sprintLine)
+            templines.add(lineIt(event));
 
         // Loop through vector
         for (String templine : templines) {
@@ -361,6 +375,28 @@ public class Scheduler {
 
         //System.out.println(csv.toString());
 
+    }
+
+    int[] lastTime = {0, 0};
+
+    private String lineIt(Event event) {
+
+        String temp = "";
+        int[] timeStart = translateTime(event.startTime);
+        if (timeStart[1] == lastTime[0] && timeStart[2] == lastTime[1]) {
+            temp += "x";
+        }
+        int[] timeEnd = translateTime(event.endTime);
+        temp += (event.competitionType.toString()) + (": Day ") + (timeStart[0]) + (" Time ") + (String.format("%02d", timeStart[1])) + (":") + (String.format("%02d", timeStart[2])) + (" - ") + (String.format("%02d", timeEnd[1])) + (":") + (String.format("%02d", timeEnd[2]));
+        temp += (" ") + (event.ageGroup.toString());
+        temp += (" Participants: ");
+        for (int i = 0; i < event.participants.size(); i++) {
+            temp += (athletes[event.participants.get(i)].getFirstName()) + (", ");
+        }
+        lastTime[0] = timeStart[1];
+        lastTime[1] = timeStart[2];
+
+        return temp;
     }
 
     // Bubble sort
