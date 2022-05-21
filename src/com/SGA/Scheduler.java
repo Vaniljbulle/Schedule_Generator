@@ -9,6 +9,8 @@ public class Scheduler {
     HashMap<Station, Vector<Vector<Event>>> schedule = new HashMap<>();
     Vector<Event> allEvents = new Vector<>();
     private int breakTime = 5;
+    private int lunchTime = 30;
+    private int lunchStartTime = 720; // 12:00
     private int startTimeOfTheDay = 420; // 7:00
     private int endTimeOfTheDay = 1260; // 21:00
     private int oneDayInMinutes = 1440; // 24:00
