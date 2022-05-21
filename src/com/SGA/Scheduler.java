@@ -1,7 +1,6 @@
 package com.SGA;
 
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.*;
 
 public class Scheduler {
     HashMap<AgeGroup, HashMap<SexCategory, HashMap<CompetitionType, Competition>>> competitions = new HashMap<>();
@@ -202,14 +201,29 @@ public class Scheduler {
     // Generate schedule
     public void generateSchedule(String filePath, String filePathOut) {
         initializeAthletes(filePath);
+        System.out.println("Athletes initialized after " + getPerformance() + " ms");
         fillCompetitions();
+        System.out.println("Competitions filled after " + getPerformance() + " ms");
         initialiseCompetitions();
+        System.out.println("Competitions initialized after " + getPerformance() + " ms");
         initialiseStations();
+        System.out.println("Stations initialized after " + getPerformance() + " ms");
         addAllEvents();
+        System.out.println("Events added after " + getPerformance() + " ms");
         String schedule = generateCSV();
+        System.out.println("CSV generated after " + getPerformance() + " ms");
         saveSchedule(filePathOut, schedule);
+        System.out.println("CSV saved after " + getPerformance() + " ms");
 
-        System.out.println("Schedule generated");
+        System.out.println("\nSchedule generated");
+    }
+
+    long timeMilli = new Date().getTime();
+    private long getPerformance(){
+        Date date = new Date();
+        long performance = date.getTime() - timeMilli;
+        timeMilli = date.getTime();
+        return performance;
     }
 
     private void saveSchedule(String filePath, String schedule) {
@@ -415,6 +429,15 @@ public class Scheduler {
         return row;
     }
 
+    private void sortEvents(Vector<Event> event) {
+        event.sort((o1, o2) -> {
+            if (o1.startTime > o2.startTime) return 1;
+            else if(o1.startTime < o2.startTime) return -1;
+            return 0;
+        });
+    }
+
+    /*
     // Insertion sort
     private void sortEvents(Vector<Event> events) {
         for (int i = 0; i < events.size(); i++) {
@@ -427,5 +450,85 @@ public class Scheduler {
             events.set(j, temp);
         }
     }
+*/
 
+    /*
+    // Quick sort
+    private void sortEvents(Vector<Event> events) {
+        quickSort(events, 0, events.size() - 1);
+    }
+
+    private void quickSort(Vector<Event> events, int low, int high) {
+        int i = low, j = high;
+        Event pivot = events.get(low + (high - low) / 2);
+
+        while (i <= j) {
+            while (events.get(i).startTime < pivot.startTime) {
+                i++;
+            }
+
+            while (events.get(j).startTime > pivot.startTime) {
+                j--;
+            }
+
+            if (i <= j) {
+                Event temp = events.get(i);
+                events.set(i, events.get(j));
+                events.set(j, temp);
+                i++;
+                j--;
+            }
+        }
+
+        if (low < j)
+            quickSort(events, low, j);
+
+        if (i < high)
+            quickSort(events, i, high);
+    }
+    */
+
+    /*
+    // Merge sort
+    private void sortEvents(Vector<Event> events) {
+        mergeSort(events, 0, events.size() - 1);
+    }
+
+    private void mergeSort(Vector<Event> events, int low, int high) {
+        if (low < high) {
+            int mid = (low + high) / 2;
+            mergeSort(events, low, mid);
+            mergeSort(events, mid + 1, high);
+            merge(events, low, mid, high);
+        }
+    }
+
+    private void merge(Vector<Event> events, int low, int mid, int high) {
+        Vector<Event> temp = new Vector<>();
+        int i = low, j = mid + 1;
+        while (i <= mid && j <= high) {
+            if (events.get(i).startTime < events.get(j).startTime) {
+                temp.add(events.get(i));
+                i++;
+            }
+            else {
+                temp.add(events.get(j));
+                j++;
+            }
+        }
+        while (i <= mid) {
+            temp.add(events.get(i));
+            i++;
+        }
+        while (j <= high) {
+            temp.add(events.get(j));
+            j++;
+        }
+        for (int k = low; k <= high; k++) {
+            events.set(k, temp.get(k - low));
+        }
+    }
+    */
 }
+
+
