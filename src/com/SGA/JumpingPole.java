@@ -25,8 +25,8 @@ public class JumpingPole extends Competition {
 
         int slightlyAboveHighest = (int) ((float) highestRecord * recordMultiplier * 100.0);
         int slightlyBelowLowest = (int) ((float) startHeight * lowestMultiplier * 100.0);
-        int increment = (int) ((double) (slightlyAboveHighest - slightlyBelowLowest) * 0.5f);
-        for (int i = (int) slightlyBelowLowest; i < slightlyAboveHighest; i += increment) {
+        int increment = 0;
+        for (int i = slightlyBelowLowest; i < slightlyAboveHighest; i += increment) {
             increment = (int) ((double) (slightlyAboveHighest - i) * 0.5f);
             if (increment < 5) increment = 5;
             Vector<Vector<Integer>> groups = new Vector<>();
@@ -39,6 +39,8 @@ public class JumpingPole extends Competition {
                 groups.add(group);
             }
             barHeights.add(i);
+            barHeights.add(i);
+            qualifierGroups.add(groups);
             qualifierGroups.add(groups);
         }
     }
@@ -51,7 +53,6 @@ public class JumpingPole extends Competition {
     @Override
     public Vector<Event> getNext() {
         if (getterIndex > qualifierGroups.size() - 1) return new Vector<>();
-        //calculateDuration();
         Vector<Event> events = new Vector<>();
         for (int i = 0; i < qualifierGroups.get(getterIndex).size(); i++) {
             Event tmpEvent = new Event();
