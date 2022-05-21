@@ -1,6 +1,5 @@
 package com.SGA;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -151,7 +150,7 @@ public class Scheduler {
 
             schedule.get(station).get(chosenStation).add(events.get(i));
             allEvents.add(events.get(i));
-            sortEvents2(allEvents);
+            sortEvents(allEvents);
         }
     }
 
@@ -199,14 +198,21 @@ public class Scheduler {
     }
 
     // Generate schedule
-    public void generateSchedule(String filePath) {
+    public void generateSchedule(String filePath, String filePathOut) {
         initializeAthletes(filePath);
         fillCompetitions();
         initialiseCompetitions();
         initialiseStations();
         addAllEvents();
+        String schedule = generateCSV();
+        saveSchedule(filePathOut, schedule);
 
-        generateCSV();
+        System.out.println("Schedule generated");
+    }
+
+    private void saveSchedule(String filePath, String schedule) {
+        FileHandler f = new FileHandler();
+        f.writeFileToPath(filePath, schedule);
     }
 
     private void initializeAthletes(String filePath) {
@@ -325,120 +331,90 @@ public class Scheduler {
     }
 
 
-    private void generateCSV() {
+
+    /*
+     *  Cell style for the table
+     *  DZ-XX:XX-YY:YY-()
+     *  Z = Day
+     *  X = Start time
+     *  Y = End time
+     *  () = Participants ID (Multiple participants delimited by ';')
+     *
+     *  Example: D1-13:37-13:38-(57;108;)
+     *  D1 = Day 1
+     *  13:37 = Start time
+     *  13:38 = End time
+     *  57 = Participant 1
+     *  108 = Participant 2
+     */
+    private String generateCSV() {
+        sortEvents(schedule.get(Station.RUNNINGCIRCLE).get(0));
+        sortEvents(schedule.get(Station.LONGTRIPLEJUMP).get(0));
+        sortEvents(schedule.get(Station.HIGHJUMP).get(0));
+        sortEvents(schedule.get(Station.SHOTTHROWING).get(0));
+        sortEvents(schedule.get(Station.POLEVAULT).get(0));
+        sortEvents(schedule.get(Station.SPRINTLINE).get(0));
+        sortEvents(schedule.get(Station.AWARDCEREMONYAREA).get(0));
+
         StringBuilder csv = new StringBuilder();
 
-        Vector<Event> runningCircle = new Vector<>(schedule.get(Station.RUNNINGCIRCLE).get(0));
-        Vector<Event> longTripleJump = new Vector<>(schedule.get(Station.LONGTRIPLEJUMP).get(0));
-        Vector<Event> highJump = new Vector<>(schedule.get(Station.HIGHJUMP).get(0));
-        Vector<Event> shotThrow = new Vector<>(schedule.get(Station.SHOTTHROWING).get(0));
-        Vector<Event> poleVault = new Vector<>(schedule.get(Station.POLEVAULT).get(0));
-        Vector<Event> sprintLine = new Vector<>(schedule.get(Station.SPRINTLINE).get(0));
-        Vector<Event> awards = new Vector<>(schedule.get(Station.AWARDCEREMONYAREA).get(0));
-        sortEvents(runningCircle);
-        sortEvents(longTripleJump);
-        sortEvents(highJump);
-        sortEvents(shotThrow);
-        sortEvents(poleVault);
-        sortEvents(sprintLine);
-        sortEvents(awards);
+        // Header of the csv file
+        csv.append("RunningCircle,LongTripleJump,HighJump,ShotThrow,PoleVault,SprintLine,Awards\n");
 
+        // Get the largest size of the events
+        int maxSize = Math.max(schedule.get(Station.RUNNINGCIRCLE).get(0).size(),
+                Math.max(schedule.get(Station.LONGTRIPLEJUMP).get(0).size(),
+                        Math.max(schedule.get(Station.HIGHJUMP).get(0).size(),
+                                Math.max(schedule.get(Station.SHOTTHROWING).get(0).size(),
+                                        Math.max(schedule.get(Station.POLEVAULT).get(0).size(),
+                                                Math.max(schedule.get(Station.SPRINTLINE).get(0).size(),
+                                                        schedule.get(Station.AWARDCEREMONYAREA).get(0).size()))))));
 
-        StringBuilder groups = new StringBuilder();
+        // Build the csv file
+        for (int i = 0; i < maxSize; i++) {
+            String row;
+            row = getCell(schedule.get(Station.RUNNINGCIRCLE).get(0), i);
+            row += "," + getCell(schedule.get(Station.LONGTRIPLEJUMP).get(0), i);
+            row += "," + getCell(schedule.get(Station.HIGHJUMP).get(0), i);
+            row += "," + getCell(schedule.get(Station.SHOTTHROWING).get(0), i);
+            row += "," + getCell(schedule.get(Station.POLEVAULT).get(0), i);
+            row += "," + getCell(schedule.get(Station.SPRINTLINE).get(0), i);
+            row += "," + getCell(schedule.get(Station.AWARDCEREMONYAREA).get(0), i);
 
-        Vector<String> templines = new Vector<>();
-        //int[] lastTime = {0,0};
-        for (Event event : runningCircle)
-            templines.add(lineIt(event));
-
-        for (Event event : longTripleJump)
-            templines.add(lineIt(event));
-
-        for (Event event : highJump)
-            templines.add(lineIt(event));
-
-        for (Event event : shotThrow)
-            templines.add(lineIt(event));
-
-        for (Event event : poleVault)
-            templines.add(lineIt(event));
-
-        for (Event event : sprintLine)
-            templines.add(lineIt(event));
-
-        // Loop through vector
-        for (String templine : templines) {
-            // Check if first character is "x"
-            if (templine.charAt(0) == 'x') {
-                // Duplicate start time
-                System.out.println(templine);
-            } else {
-                System.out.println(templine);
-            }
+            csv.append(row).append("\n");
         }
-
-        /*
-        int[] lastTime = {0,0};
-        for (Event event : runningCircle) {
-            int[] timeStart = translateTime(event.startTime);
-            if (timeStart[1] == lastTime[0] && timeStart[2] == lastTime[1]) {
-                csv.append("x");
-            }
-            int[] timeEnd = translateTime(event.endTime);
-            csv.append(event.competitionType.toString()).append(": Day ").append(timeStart[0]).append(" Time ").append(String.format("%02d", timeStart[1])).append(":").append(String.format("%02d", timeStart[2])).append(" - ").append(String.format("%02d", timeEnd[1])).append(":").append(String.format("%02d", timeEnd[2]));
-            csv.append(" ").append(event.ageGroup.toString());
-            csv.append(" Participants: ");
-            for (int i = 0; i < event.participants.size(); i++) {
-                csv.append(athletes[event.participants.get(i)].getFirstName()).append(", ");
-            }
-            csv.append("\n");
-            lastTime[0] = timeStart[1];
-            lastTime[1] = timeStart[2];
-        }
-        */
-
 
         //System.out.println(csv.toString());
-
+        return csv.toString();
     }
 
-    int[] lastTime = {0, 0};
+    private String getCell(Vector<Event> event, int i) {
+        String row = "";
+        int[] time;
+        try {
+            // Start time
+            time = translateTime(event.get(i).startTime);
+            row += "D" + time[0] + "-"+ String.format("%02d", time[1]) + ":" + String.format("%02d", time[2]) + "-";
 
-    private String lineIt(Event event) {
+            // End time
+            time = translateTime(event.get(i).endTime);
+            row += String.format("%02d", time[1]) + ":" + String.format("%02d", time[2]) + "-";
 
-        String temp = "";
-        int[] timeStart = translateTime(event.startTime);
-        if (timeStart[1] == lastTime[0] && timeStart[2] == lastTime[1]) {
-            temp += "x";
-        }
-        int[] timeEnd = translateTime(event.endTime);
-        temp += (event.competitionType.toString()) + (": Day ") + (timeStart[0]) + (" Time ") + (String.format("%02d", timeStart[1])) + (":") + (String.format("%02d", timeStart[2])) + (" - ") + (String.format("%02d", timeEnd[1])) + (":") + (String.format("%02d", timeEnd[2]));
-        temp += (" ") + (event.ageGroup.toString());
-        temp += (" Participants: ");
-        for (int i = 0; i < event.participants.size(); i++) {
-            temp += (athletes[event.participants.get(i)].getFirstName()) + (", ");
-        }
-        lastTime[0] = timeStart[1];
-        lastTime[1] = timeStart[2];
-
-        return temp;
-    }
-
-    // Bubble sort
-    private void sortEvents(Vector<Event> events) {
-        for (int i = 0; i < events.size(); i++) {
-            for (int j = 0; j < events.size() - 1; j++) {
-                if (events.get(j).startTime > events.get(j + 1).startTime) {
-                    Event temp = events.get(j);
-                    events.set(j, events.get(j + 1));
-                    events.set(j + 1, temp);
-                }
+            // Participants
+            row += "(";
+            for (int j = 0; j < event.get(i).participants.size(); j++) {
+                row += event.get(i).participants.get(j) + ";";
             }
+            row += ")";
         }
+        catch (ArrayIndexOutOfBoundsException ignored){
+        }
+
+        return row;
     }
 
     // Insertion sort
-    private void sortEvents2(Vector<Event> events) {
+    private void sortEvents(Vector<Event> events) {
         for (int i = 0; i < events.size(); i++) {
             Event temp = events.get(i);
             int j = i;
