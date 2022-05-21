@@ -364,13 +364,10 @@ public class Scheduler {
      *  108 = Participant 2
      */
     private String generateCSV() {
-        sortEvents(schedule.get(Station.RUNNINGCIRCLE).get(0));
-        sortEvents(schedule.get(Station.LONGTRIPLEJUMP).get(0));
-        sortEvents(schedule.get(Station.HIGHJUMP).get(0));
-        sortEvents(schedule.get(Station.SHOTTHROWING).get(0));
-        sortEvents(schedule.get(Station.POLEVAULT).get(0));
-        sortEvents(schedule.get(Station.SPRINTLINE).get(0));
-        sortEvents(schedule.get(Station.AWARDCEREMONYAREA).get(0));
+        // Sort competitions
+        for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
+            sortEvents(schedule.get(station).get(0));
+        }
 
         StringBuilder csv = new StringBuilder();
 
@@ -405,28 +402,28 @@ public class Scheduler {
     }
 
     private String getCell(Vector<Event> event, int i) {
-        String row = "";
+        StringBuilder row = new StringBuilder();
         int[] time;
         try {
             // Start time
             time = translateTime(event.get(i).startTime);
-            row += "D" + time[0] + "-"+ String.format("%02d", time[1]) + ":" + String.format("%02d", time[2]) + "-";
+            row.append("D").append(time[0]).append("-").append(String.format("%02d", time[1])).append(":").append(String.format("%02d", time[2])).append("-");
 
             // End time
             time = translateTime(event.get(i).endTime);
-            row += String.format("%02d", time[1]) + ":" + String.format("%02d", time[2]) + "-";
+            row.append(String.format("%02d", time[1])).append(":").append(String.format("%02d", time[2])).append("-");
 
             // Participants
-            row += "(";
+            row.append("(");
             for (int j = 0; j < event.get(i).participants.size(); j++) {
-                row += event.get(i).participants.get(j) + ";";
+                row.append(event.get(i).participants.get(j)).append(";");
             }
-            row += ")";
+            row.append(")");
         }
         catch (ArrayIndexOutOfBoundsException ignored){
         }
 
-        return row;
+        return row.toString();
     }
 
     private void sortEvents(Vector<Event> event) {
