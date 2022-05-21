@@ -9,7 +9,7 @@ public class RunningHurdles extends Competition{
         int participantsPerEvent = 8;
         int numOfAthletes = athleteIds.size();
         int numOfGroups = (int) Math.ceil((double) numOfAthletes / participantsPerEvent);
-        System.out.printf("Num Of Groups Running 60-> " + numOfGroups);
+        //System.out.printf("Num Of Groups Running 60-> " + numOfGroups);
 
         Vector<Vector<Integer>> groups = new Vector<>();
         if (numOfAthletes > participantsPerEvent) {

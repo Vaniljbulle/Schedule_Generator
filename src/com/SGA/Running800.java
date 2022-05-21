@@ -9,7 +9,7 @@ public class Running800 extends Competition {
         int participantsPerEvent = 6;
         int numOfAthletes = athleteIds.size();
         int numOfGroups = (int) Math.ceil((double) numOfAthletes / participantsPerEvent);
-        System.out.printf("Num Of Groups Running 60-> " + numOfGroups);
+        //System.out.printf("Num Of Groups Running 60-> " + numOfGroups);
 
         Vector<Vector<Integer>> groups = new Vector<>();
         if (numOfAthletes > participantsPerEvent) {
