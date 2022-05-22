@@ -16,8 +16,8 @@ public class Scheduler {
         initializeAthletes(filePath);
         System.out.println("Athletes initialized after " + getPerformance() + " ms");
 
-        Generator generator = new Generator(athletes);
-        schedule = generator.generate();
+        Generator generator = new Generator();
+        schedule = generator.generate(schedule, athletes);
         String schedule = generateCSV();
         System.out.println("CSV generated");
         saveSchedule(filePathOut, schedule);
@@ -59,6 +59,7 @@ public class Scheduler {
         fileHandler.readFileFromPath(filePath);
         return fileHandler.getFileContent();
     }
+
     //Translate Time From Minutes To Houres && minutes
     public int[] translateTime(int timeInMinutes) {
         int[] time = {0, 0, 0};
@@ -80,6 +81,18 @@ public class Scheduler {
         return time;
     }
 
+    private String getStationName(Station type) {
+        return switch (type) {
+            case SPRINTLINE -> "SPRINTLINE";
+            case RUNNINGCIRCLE -> "RUNNINGCIRCLE";
+            case LONGTRIPLEJUMP -> "LONGTRIPLEJUMP";
+            case HIGHJUMP -> "HIGHJUMP";
+            case POLEVAULT -> "POLEVAULT";
+            case SHOTTHROWING -> "SHOTTHROWING";
+            case AWARDCEREMONYAREA -> "AWARDCEREMONYAREA";
+        };
+    }
+
     /*
      *  Cell style for the table
      *  DZ-XX:XX-YY:YY-()
@@ -96,6 +109,7 @@ public class Scheduler {
      *  108 = Participant 2
      */
     private String generateCSV() {
+        checkCollision();
         // Sort competitions
         for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
             for (int i = 0; i < schedule.get(station).size(); i++) {
@@ -105,8 +119,34 @@ public class Scheduler {
 
         StringBuilder csv = new StringBuilder();
 
+        // Loop through keys schedule
+        for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
+            // For  each station
+            for (int i = 0; i < schedule.get(station).size(); i++) {
+                System.out.println("\n" + station + " " + i);
+                csv.append(station).append("(").append(i).append("),");
+            }
+        }
+        csv.deleteCharAt(csv.length() - 1);
+//
+//        for (int i = 0; i < events)
+
+        /*
+        for (Station type : Station.values()) {
+            if (schedule.containsKey(type)) {
+                if (schedule.get(type).size() != 1) {
+                    for (int i = 0; i < schedule.get(type).size(); i++) {
+                        header += getStationName(type) + i + ",";
+                        System.out.println(getStationName(type));
+                    }
+                } else {
+                    header += getStationName(type) + ",";
+                }
+            }
+        }
+*/
         // Header of the csv file
-        csv.append("RunningCircle,LongTripleJump,HighJump,ShotThrow,PoleVault,SprintLine,Awards\n");
+        csv.append("\n");
 
         // Get the largest size of the events
         int maxSize = Math.max(schedule.get(Station.RUNNINGCIRCLE).get(0).size(),
@@ -122,8 +162,11 @@ public class Scheduler {
             String row;
             row = getCell(schedule.get(Station.RUNNINGCIRCLE).get(0), i);
             row += "," + getCell(schedule.get(Station.LONGTRIPLEJUMP).get(0), i);
+            row += "," + getCell(schedule.get(Station.LONGTRIPLEJUMP).get(1), i);
             row += "," + getCell(schedule.get(Station.HIGHJUMP).get(0), i);
+            row += "," + getCell(schedule.get(Station.HIGHJUMP).get(1), i);
             row += "," + getCell(schedule.get(Station.SHOTTHROWING).get(0), i);
+            row += "," + getCell(schedule.get(Station.SHOTTHROWING).get(1), i);
             row += "," + getCell(schedule.get(Station.POLEVAULT).get(0), i);
             row += "," + getCell(schedule.get(Station.SPRINTLINE).get(0), i);
             row += "," + getCell(schedule.get(Station.AWARDCEREMONYAREA).get(0), i);
@@ -131,6 +174,7 @@ public class Scheduler {
             csv.append(row).append("\n");
         }
 
+        checkCollision();
         //System.out.println(csv.toString());
         return csv.toString();
     }
@@ -152,6 +196,8 @@ public class Scheduler {
         }
     }
 
+    private int delayDay = 0;
+
     private String getCell(Vector<Event> event, int i) {
         StringBuilder row = new StringBuilder();
         int[] timeStart, timeEnd;
@@ -159,9 +205,21 @@ public class Scheduler {
             timeStart = translateTime(event.get(i).startTime);
             timeEnd = translateTime(event.get(i).endTime);
 
-            // If time is between 12 && 13, delay schedule by an hour
-            if (timeEnd[1] == 12){
-                delaySchedule(60 + 60 - timeStart[2]);
+//            // If time is between 12 && 13, delay schedule by an hour
+//            if (timeEnd[0] == delayDay && timeEnd[1] == 12){
+//                delayDay++;
+//                delaySchedule(60);
+//                timeStart = translateTime(event.get(i).startTime);
+//                timeEnd = translateTime(event.get(i).endTime);
+//            }
+
+            event.get(i).startTime += 60 * timeStart[0];
+            event.get(i).endTime += 60 * timeStart[0];
+            timeStart = translateTime(event.get(i).startTime);
+            timeEnd = translateTime(event.get(i).endTime);
+            if (timeEnd[1] > 11) {
+                event.get(i).startTime += 60;
+                event.get(i).endTime += 60;
                 timeStart = translateTime(event.get(i).startTime);
                 timeEnd = translateTime(event.get(i).endTime);
             }
@@ -169,7 +227,7 @@ public class Scheduler {
             // If end time is before start time, delay schedule by difference between end of day and last start time
             // e.g 16:55-07:05 -> diff = 6
             if (timeEnd[1] < timeStart[1]) {
-                delaySchedule(61-timeStart[2]);
+                //delaySchedule(61 - timeStart[2]);
                 timeStart = translateTime(event.get(i).startTime);
                 timeEnd = translateTime(event.get(i).endTime);
             }

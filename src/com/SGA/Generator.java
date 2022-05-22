@@ -7,8 +7,6 @@ import java.util.Vector;
 
 public class Generator {
     HashMap<AgeGroup, HashMap<SexCategory, HashMap<CompetitionType, Competition>>> competitions = new HashMap<>();
-    private Athlete[] athletes;
-    HashMap<Station, Vector<Vector<Event>>> schedule = new HashMap<>();
     Vector<Event> allEvents = new Vector<>();
     private int breakTime = 5;
     private int lunchTime = 30;
@@ -16,12 +14,6 @@ public class Generator {
     private int startTimeOfTheDay = 420; // 7:00
     private int endTimeOfTheDay = 1020; // 17:00
     private int oneDayInMinutes = 1440; // 24:00
-
-    // Constructor
-    public Generator(Athlete[] athletes) {
-        this.athletes = athletes;
-
-    }
 
     // Returns the station that fits the CompetitionType
     private Station getCompetitionStation(CompetitionType type) {
@@ -61,7 +53,7 @@ public class Generator {
     }
 
     // Checking if newEvent collide with any other event, then adjust timeslot accordingly
-    private void moveIfOverlapGeneral(Event newEvent) {
+    private void moveIfOverlapGeneral(HashMap<Station, Vector<Vector<Event>>> schedule, Event newEvent) {
         for (Vector<Vector<Event>> stations : schedule.values()) {
             for (Vector<Event> events : stations) {
                 for (Event event : events) {
@@ -85,7 +77,7 @@ public class Generator {
     }
 
     // Checking if newEvent collide with any other event in its station, then adjust timeslot accordingly
-    private void moveIfOverlapOwnStation(Event newEvent) {
+    private void moveIfOverlapOwnStation(HashMap<Station, Vector<Vector<Event>>> schedule, Event newEvent) {
         for (Vector<Event> events : schedule.get(newEvent.station)) {
             for (Event event : events) {
                 if (event.stationIndex == newEvent.stationIndex) {
@@ -105,13 +97,10 @@ public class Generator {
     private void moveIfOverlap(Event newEvent) {
         for (Event event : allEvents) {
             if (getCompetitionStation(event.competitionType) == getCompetitionStation(newEvent.competitionType)) {
-                if (event.stationIndex == newEvent.stationIndex) {
-                    if (doesCollide(event, newEvent) ||
-                            (event.priorityIndex < newEvent.priorityIndex)) {
+                if (doesCollide(event, newEvent) || (event.priorityIndex < newEvent.priorityIndex && event.startTime > newEvent.endTime)) {
+                    if (event.stationIndex == newEvent.stationIndex) {
                         overlappingOwnStation(newEvent, event);
-                    }
-                } else {
-                    if (event.priorityIndex < newEvent.priorityIndex) {
+                    } else {
                         overlappingGeneral(newEvent, event);
                     }
                 }
@@ -129,7 +118,7 @@ public class Generator {
     }
 
     // Adds all events the vector to the schedule
-    private void addToSchedule(Vector<Event> events) {
+    private void addToSchedule(HashMap<Station, Vector<Vector<Event>>> schedule, Athlete[] athletes, Vector<Event> events) {
         for (int i = 0; i < events.size(); i++) {
             Station station = getCompetitionStation(events.get(i).competitionType);
             int size = schedule.get(station).size();
@@ -159,7 +148,7 @@ public class Generator {
     }
 
     // Calculates groups and duration for all competitions
-    private void initialiseCompetitions() {
+    private void initialiseCompetitions(Athlete[] athletes) {
         for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
             for (HashMap<CompetitionType, Competition> sex : age.values()) {
                 for (Competition type : sex.values()) {
@@ -171,7 +160,7 @@ public class Generator {
     }
 
     // Adds all stations to the schedule
-    private void initialiseStations() {
+    private void initialiseStations(HashMap<Station, Vector<Vector<Event>>> schedule) {
         for (Station station : Station.values())
             schedule.put(station, new Vector<>());
         schedule.get(Station.RUNNINGCIRCLE).add(new Vector<>());
@@ -187,14 +176,14 @@ public class Generator {
     }
 
     // Adds all events to the schedule
-    private void addAllEvents() {
+    private void addAllEvents(HashMap<Station, Vector<Vector<Event>>> schedule, Athlete[] athletes) {
         for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
             for (HashMap<CompetitionType, Competition> sex : age.values()) {
                 for (Competition type : sex.values()) {
                     while (true) {
                         Vector<Event> events = type.getNext();
                         if (events.size() == 0) break;
-                        addToSchedule(events);
+                        addToSchedule(schedule, athletes, events);
                     }
                 }
             }
@@ -256,7 +245,7 @@ public class Generator {
 
     // Fills the hashmap with competitions and sorts the athletes'
     // id's in the right age group, sex category and competition type
-    private void fillCompetitions() {
+    private void fillCompetitions(Athlete[] athletes) {
         for (int i = 0; i < athletes.length; i++) {
             Athlete athlete = athletes[i];
             // Competitor is too young
@@ -289,15 +278,28 @@ public class Generator {
         });
     }
 
-    public HashMap<Station, Vector<Vector<Event>>> generate() {
-        fillCompetitions();
+    public HashMap<Station, Vector<Vector<Event>>> generate(HashMap<Station, Vector<Vector<Event>>> schedule, Athlete[] athletes) {
+        fillCompetitions(athletes);
         System.out.println("Competitions filled after");
-        initialiseCompetitions();
+        initialiseCompetitions(athletes);
         System.out.println("Competitions initialized");
-        initialiseStations();
+        initialiseStations(schedule);
         System.out.println("Stations initialized");
-        addAllEvents();
+        addAllEvents(schedule, athletes);
         System.out.println("Events initialized");
+
+        System.out.println("\nCollision test initialized");
+        for (Event event1 : allEvents) {
+            for (Event event2 : allEvents) {
+                if (event1 == event2) continue;
+                if (doesCollide(event1, event2) && hasOverlappingAthletes(event1, event2)) {
+                    System.out.println("Collision at: " + event1.station + " " + event1.stationIndex + " Other event: " + event2.station + " " + event2.stationIndex);
+                    System.out.println("Participants: " + event1.participants.toString() + " Other event: " + event2.participants.toString());
+                    System.out.println("Times: " + event1.startTime + " - " + event1.endTime + " Other event: " + event2.startTime + " - " + event2.endTime);
+                }
+            }
+        }
+        System.out.println("\n");
 
         return schedule;
     }
