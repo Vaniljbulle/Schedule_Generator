@@ -333,9 +333,9 @@ public class Scheduler {
     public int[] translateTime(int timeInMinutes) {
         int[] time = {0, 0, 0};
 
-        while (timeInMinutes > 1260) {
+        while (timeInMinutes > endTimeOfTheDay) {
             time[0]++;
-            timeInMinutes -= 840;
+            timeInMinutes -= (endTimeOfTheDay - startTimeOfTheDay);
         }
         time[1] = timeInMinutes / 60;
         time[2] = timeInMinutes % 60;
