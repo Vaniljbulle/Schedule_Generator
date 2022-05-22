@@ -11,7 +11,7 @@ public class Scheduler {
     private int lunchTime = 30;
     private int lunchStartTime = 720; // 12:00
     private int startTimeOfTheDay = 420; // 7:00
-    private int endTimeOfTheDay = 1260; // 21:00
+    private int endTimeOfTheDay = 1020; // 17:00
     private int oneDayInMinutes = 1440; // 24:00
 
     // Constructor
@@ -329,7 +329,23 @@ public class Scheduler {
         fileHandler.readFileFromPath(filePath);
         return fileHandler.getFileContent();
     }
+    //Translate Time From Minutes To Houres && minutes
+    public int[] translateTime(int timeInMinutes) {
+        int[] time = {0, 0, 0};
 
+        while (timeInMinutes > endTimeOfTheDay) {
+            time[0]++;
+            timeInMinutes -= (endTimeOfTheDay - startTimeOfTheDay);
+        }
+        time[1] = timeInMinutes / 60;
+        time[2] = timeInMinutes % 60;
+
+        //System.out.println("Day = " + time[0] + " Time " + time[1] + ":" +time[2]);
+
+
+        return time;
+    }
+    /*
     //Translate Time From Minutes To Houres && minutes
     public int[] translateTime(int timeInMinutes) {
         int[] time = {0, 0, 0};
@@ -348,6 +364,8 @@ public class Scheduler {
         return time;
     }
 
+
+     */
 
     /*
      *  Cell style for the table
@@ -402,8 +420,46 @@ public class Scheduler {
         return csv.toString();
     }
 
+    // Delay events start time and end time
+    private void delayEvents(Vector<Event> events, int delay) {
+        for (Event event : events) {
+            event.startTime = event.startTime + delay;
+            event.endTime = event.endTime + delay;
+        }
+    }
+
+    // Delay all events in the schedule
+    private void delaySchedule(int delay) {
+        for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
+            delayEvents(schedule.get(station).get(0), delay);
+        }
+    }
+
     private String getCell(Vector<Event> event, int i) {
         StringBuilder row = new StringBuilder();
+        int[] timeStart, timeEnd;
+        try {
+            timeStart = translateTime(event.get(i).startTime);
+            timeEnd = translateTime(event.get(i).endTime);
+
+            // If time is between 12 && 13, delay schedule by an hour
+            if (timeEnd[1] == 12){
+                delaySchedule(60 + 60 - timeStart[2]);
+                timeStart = translateTime(event.get(i).startTime);
+                timeEnd = translateTime(event.get(i).endTime);
+            }
+
+            // If end time is before start time, delay schedule by difference between end of day and last start time
+            // e.g 16:55-07:05 -> diff = 6
+            if (timeEnd[1] < timeStart[1]) {
+                delaySchedule(61-timeStart[2]);
+                timeStart = translateTime(event.get(i).startTime);
+                timeEnd = translateTime(event.get(i).endTime);
+            }
+
+            row.append("D").append(timeStart[0]).append("-").append(String.format("%02d", timeStart[1])).append(":").append(String.format("%02d", timeStart[2])).append("-");
+            row.append(String.format("%02d", timeEnd[1])).append(":").append(String.format("%02d", timeEnd[2])).append("-");
+        /*
         int[] time;
         try {
             int top = event.get(i).startTime + oneDayInMinutes - endTimeOfTheDay;
@@ -418,6 +474,7 @@ public class Scheduler {
             // End time
             time = translateTime(event.get(i).endTime);
             row.append(String.format("%02d", time[1])).append(":").append(String.format("%02d", time[2])).append("-");
+*/
 
             // Participants
             row.append("(");
