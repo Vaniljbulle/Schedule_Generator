@@ -98,7 +98,9 @@ public class Scheduler {
     private String generateCSV() {
         // Sort competitions
         for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
-            sortEvents(schedule.get(station).get(0));
+            for (int i = 0; i < schedule.get(station).size(); i++) {
+                sortEvents(schedule.get(station).get(i));
+            }
         }
 
         StringBuilder csv = new StringBuilder();
@@ -144,7 +146,9 @@ public class Scheduler {
     // Delay all events in the schedule
     private void delaySchedule(int delay) {
         for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
-            delayEvents(schedule.get(station).get(0), delay);
+            for (int i = 0; i < schedule.get(station).size(); i++) {
+                delayEvents(schedule.get(station).get(i), delay);
+            }
         }
     }
 
@@ -183,6 +187,54 @@ public class Scheduler {
         }
 
         return row.toString();
+    }
+
+    // Returns whether the event times collide
+    private boolean doesCollide(Event event1, Event event2) {
+        return event1.day == event2.day && event1.endTime > event2.startTime && event1.startTime < event2.endTime;
+    }
+
+    // Returns whether the events have any of the same athletes
+    private boolean hasOverlappingAthletes(Event event1, Event event2) {
+        for (int a1 : event1.participants) {
+            for (int a2 : event2.participants) {
+                if (a1 == a2) return true;
+            }
+        }
+        return false;
+    }
+
+    int lastTimeStart = 0;
+    int lastTImeEnd = 0;
+    private void checkCollision() {
+        for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
+            for (int i = 0; i < schedule.get(station).size(); i++) {
+                for (int j = 0; j < schedule.get(station).get(i).size(); j++) {
+                    Event event1 = schedule.get(station).get(i).get(j);
+                    for (int k = 0; k < schedule.get(station).size(); k++) {
+                        for (int h = 0; h < schedule.get(station).get(k).size(); h++) {
+                            Event event2 = schedule.get(station).get(k).get(h);
+                            if (event1 == event2) continue;
+                            if (doesCollide(event1, event2) && hasOverlappingAthletes(event1, event2)) {
+                                System.out.println("Collision at: " + station + " " + i + " " + (j+2) + " Other event: " + station + " " + k + " " + (h+2));
+                                System.out.println("Participants: " + event1.participants.toString() + " Other event: " + event2.participants.toString());
+                                System.out.println("Times: " + event1.startTime + " - " + event1.endTime + " Other event: " + event2.startTime + " - " + event2.endTime);
+                            }
+                        }
+                    }
+//                    if (schedule.get(station).get(i).get(j).startTime == lastTimeStart) {
+//                        System.out.println("Collision at " + station + " " + i + " " + j);
+//                    }
+//                    lastTimeStart = schedule.get(station).get(i).get(j).startTime;
+//
+//                    if (schedule.get(station).get(i).get(j).endTime == lastTImeEnd) {
+//                        System.out.println("Collision at " + station + " " + i + " " + j);
+//                    }
+//                    lastTImeEnd = schedule.get(station).get(i).get(j).endTime;
+                }
+            }
+
+        }
     }
 
     private void sortEvents(Vector<Event> event) {

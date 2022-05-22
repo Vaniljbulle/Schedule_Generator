@@ -19,6 +19,13 @@ public class Event {
     public AgeGroup ageGroup;
     public SexCategory sexCategory;
 
+    public String toString() {
+        String s = "";
+        for (int i = 0; i < participants.size(); i++) {
+            s += participants.get(i) + " ";
+        }
+        return s;
+    }
 
     public void printCompetitionsInformation(){
         System.out.println("Competitions Type : " + this.competitionType);
