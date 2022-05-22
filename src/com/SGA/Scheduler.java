@@ -215,7 +215,7 @@ public class Scheduler {
         saveSchedule(filePathOut, schedule);
         System.out.println("CSV saved after " + getPerformance() + " ms");
 
-        System.out.println("\nSchedule generated");
+        System.out.println("\nThe schedule has been successfully generated into the given file");
     }
 
     long timeMilli = new Date().getTime();
