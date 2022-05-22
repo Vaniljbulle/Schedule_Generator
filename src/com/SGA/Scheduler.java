@@ -219,7 +219,8 @@ public class Scheduler {
     }
 
     long timeMilli = new Date().getTime();
-    private long getPerformance(){
+
+    private long getPerformance() {
         Date date = new Date();
         long performance = date.getTime() - timeMilli;
         timeMilli = date.getTime();
@@ -333,11 +334,12 @@ public class Scheduler {
     public int[] translateTime(int timeInMinutes) {
         int[] time = {0, 0, 0};
 
-        while (timeInMinutes > endTimeOfTheDay) {
-            time[0]++;
-            timeInMinutes -= (endTimeOfTheDay - startTimeOfTheDay);
-        }
-        time[1] = timeInMinutes / 60;
+//        while (timeInMinutes > endTimeOfTheDay) {
+//            time[0]++;
+//            timeInMinutes -= (endTimeOfTheDay - startTimeOfTheDay);
+//        }
+        time[0] = timeInMinutes / oneDayInMinutes;
+        time[1] = (timeInMinutes / 60) % 24;
         time[2] = timeInMinutes % 60;
 
         //System.out.println("Day = " + time[0] + " Time " + time[1] + ":" +time[2]);
@@ -345,7 +347,6 @@ public class Scheduler {
 
         return time;
     }
-
 
 
     /*
@@ -405,6 +406,11 @@ public class Scheduler {
         StringBuilder row = new StringBuilder();
         int[] time;
         try {
+            int top = event.get(i).startTime + oneDayInMinutes - endTimeOfTheDay;
+            int nights = top / oneDayInMinutes;
+            int nightLength = oneDayInMinutes - endTimeOfTheDay + startTimeOfTheDay;
+            event.get(i).startTime += nights * nightLength;
+            event.get(i).endTime += nights * nightLength;
             // Start time
             time = translateTime(event.get(i).startTime);
             row.append("D").append(time[0]).append("-").append(String.format("%02d", time[1])).append(":").append(String.format("%02d", time[2])).append("-");
@@ -419,8 +425,7 @@ public class Scheduler {
                 row.append(event.get(i).participants.get(j)).append(";");
             }
             row.append(")");
-        }
-        catch (ArrayIndexOutOfBoundsException ignored){
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
         return row.toString();
@@ -429,7 +434,7 @@ public class Scheduler {
     private void sortEvents(Vector<Event> event) {
         event.sort((o1, o2) -> {
             if (o1.startTime > o2.startTime) return 1;
-            else if(o1.startTime < o2.startTime) return -1;
+            else if (o1.startTime < o2.startTime) return -1;
             return 0;
         });
     }
