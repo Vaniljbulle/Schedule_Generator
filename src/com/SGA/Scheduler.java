@@ -264,8 +264,32 @@ public class Scheduler {
 
     int lastTimeStart = 0;
     int lastTImeEnd = 0;
+
     private void checkCollision() {
-        for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
+        System.out.println("Checking for collisions...");
+        for (Station station : Station.values()) {
+            if (schedule.containsKey(station)) {
+                for (int i = 0; i < schedule.get(station).size(); i++) {
+                    for (int j = 0; j < schedule.get(station).get(i).size(); j++) {
+                        Event event1 = schedule.get(station).get(i).get(j);
+                        for (int k = 0; k < schedule.get(station).size(); k++) {
+                            for (int h = 0; h < schedule.get(station).get(k).size(); h++) {
+                                Event event2 = schedule.get(station).get(k).get(h);
+                                if (event1 == event2) continue;
+                                if (doesCollide(event1, event2) && hasOverlappingAthletes(event1, event2)) {
+                                    System.out.println("Collision at: " + event1.station + " " + i + " " + (j + 2) + " Other event: " + event2.station + " " + k + " " + (h + 2));
+                                    System.out.println("Participants: " + event1.participants.toString() + " Other event: " + event2.participants.toString());
+                                    System.out.println("Times: " + event1.startTime + " - " + event1.endTime + " Other event: " + event2.startTime + " - " + event2.endTime);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        System.out.println("Collision check completed");
+        /*for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
             for (int i = 0; i < schedule.get(station).size(); i++) {
                 for (int j = 0; j < schedule.get(station).get(i).size(); j++) {
                     Event event1 = schedule.get(station).get(i).get(j);
@@ -292,7 +316,7 @@ public class Scheduler {
                 }
             }
 
-        }
+        }*/
     }
 
     private void sortEvents(Vector<Event> event) {
