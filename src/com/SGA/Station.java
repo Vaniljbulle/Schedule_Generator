@@ -1,0 +1,11 @@
+package com.SGA;
+
+public enum Station {
+    RUNNINGCIRCLE,
+    SPRINTLINE,
+    LONGTRIPLEJUMP,
+    HIGHJUMP,
+    POLEVAULT,
+    SHOTTHROWING,
+    AWARDCEREMONYAREA
+}

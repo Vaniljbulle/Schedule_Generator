@@ -12,20 +12,8 @@ public class Athlete {
     }
 
     private SexCategory sex;
-    /*
-    private double running60;
-    private double running200;
-    private double running800;
-    private double running1500;
-    private double running3000;
-    private double runningHurdles60;
-    private double jumpingLong;
-    private double jumpingTriple;
-    private double jumpingHigh;
-    private double jumpingPole;
-    private double throwingShot;
-    */
-    private HashMap<CompetitionType, Double> competitionResults;
+
+    private HashMap<CompetitionType, Double> competitionResults = new HashMap<>();
 
 
     // Getters and setters
@@ -131,4 +119,13 @@ public class Athlete {
         }
         return result;
     }
+
+    public void printAthleteInformation(){
+        System.out.println("First Name : " + this.firstName);
+        System.out.println("Last Name  : " + this.lastName );
+        System.out.println("Sex        : " + this.sex);
+        System.out.println("Results    : " + this.competitionResults);
+
+    }
+
 }

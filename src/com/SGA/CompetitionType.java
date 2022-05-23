@@ -11,5 +11,6 @@ public enum CompetitionType {
     TRIPLEJUMPING,
     HIGHJUMPING,
     POLEJUMPING,
-    THROWING
+    THROWING,
+    AWARD
 }
