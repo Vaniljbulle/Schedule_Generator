@@ -1,19 +1,17 @@
 package com.SGA;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
 public class Generator {
     HashMap<AgeGroup, HashMap<SexCategory, HashMap<CompetitionType, Competition>>> competitions = new HashMap<>();
     Vector<Event> allEvents = new Vector<>();
-    private int breakTime = 5;
-    private int lunchTime = 30;
-    private int lunchStartTime = 720; // 12:00
-    private int startTimeOfTheDay = 420; // 7:00
-    private int endTimeOfTheDay = 1020; // 17:00
-    private int oneDayInMinutes = 1440; // 24:00
+    private final int breakTime = 5;
+    private final int lunchTime = 60;
+    private final int lunchStartTime = 720; // 12:00
+    private final int startTimeOfTheDay = 420; // 7:00
+    private final int endTimeOfTheDay = 1020; // 17:00
+    private final int oneDayInMinutes = 1440; // 24:00
 
     // Returns the station that fits the CompetitionType
     private Station getCompetitionStation(CompetitionType type) {
@@ -52,19 +50,6 @@ public class Generator {
         }
     }
 
-    // Checking if newEvent collide with any other event, then adjust timeslot accordingly
-    private void moveIfOverlapGeneral(HashMap<Station, Vector<Vector<Event>>> schedule, Event newEvent) {
-        for (Vector<Vector<Event>> stations : schedule.values()) {
-            for (Vector<Event> events : stations) {
-                for (Event event : events) {
-                    if (doesCollide(event, newEvent)) {
-                        overlappingGeneral(newEvent, event);
-                    }
-                }
-            }
-        }
-    }
-
     // if newEvent and otherEvent share any participants:
     // Moves newEvent's timeslot to breakTime minutes after otherEvent's endTime
     // else: Moves newEvent's timeslot to right after otherEvent's endTime
@@ -76,29 +61,11 @@ public class Generator {
         newEvent.endTime = newEvent.startTime + newEvent.duration;
     }
 
-    // Checking if newEvent collide with any other event in its station, then adjust timeslot accordingly
-    private void moveIfOverlapOwnStation(HashMap<Station, Vector<Vector<Event>>> schedule, Event newEvent) {
-        for (Vector<Event> events : schedule.get(newEvent.station)) {
-            for (Event event : events) {
-                if (event.stationIndex == newEvent.stationIndex) {
-                    if (doesCollide(event, newEvent) ||
-                            (event.priorityIndex < newEvent.priorityIndex && event.startTime > newEvent.endTime)) {
-                        overlappingOwnStation(newEvent, event);
-                    }
-                } else {
-                    if (event.priorityIndex < newEvent.priorityIndex && event.startTime > newEvent.endTime) {
-                        overlappingOwnStation(newEvent, event);
-                    }
-                }
-            }
-        }
-    }
-
     private void moveIfOverlap(Event newEvent) {
         for (Event event : allEvents) {
             // Lunch break constraint
-            if (newEvent.endTime % oneDayInMinutes > lunchStartTime && newEvent.startTime % oneDayInMinutes < lunchStartTime + 60) {
-                newEvent.startTime = newEvent.startTime - (newEvent.startTime % oneDayInMinutes) + lunchStartTime + 60;
+            if (newEvent.endTime % oneDayInMinutes > lunchStartTime && newEvent.startTime % oneDayInMinutes < lunchStartTime + lunchTime) {
+                newEvent.startTime = newEvent.startTime - (newEvent.startTime % oneDayInMinutes) + lunchStartTime + lunchTime;
                 newEvent.endTime = newEvent.startTime + newEvent.duration;
             }
             // Night break constraint
@@ -289,6 +256,19 @@ public class Generator {
         });
     }
 
+    private void checkAllCollision() {
+        for (Event event1 : allEvents) {
+            for (Event event2 : allEvents) {
+                if (event1 == event2) continue;
+                if (doesCollide(event1, event2) && hasOverlappingAthletes(event1, event2)) {
+                    System.out.println("Collision at: " + event1.station + " " + event1.stationIndex + " Other event: " + event2.station + " " + event2.stationIndex);
+                    System.out.println("Participants: " + event1.participants.toString() + " Other event: " + event2.participants.toString());
+                    System.out.println("Times: " + event1.startTime + " - " + event1.endTime + " Other event: " + event2.startTime + " - " + event2.endTime);
+                }
+            }
+        }
+    }
+
     public HashMap<Station, Vector<Vector<Event>>> generate(HashMap<Station, Vector<Vector<Event>>> schedule, Athlete[] athletes) {
         fillCompetitions(athletes);
         System.out.println("Competitions filled after");
@@ -300,16 +280,7 @@ public class Generator {
         System.out.println("Events initialized");
 
         System.out.println("\nCollision test initialized");
-        for (Event event1 : allEvents) {
-            for (Event event2 : allEvents) {
-                if (event1 == event2) continue;
-                if (doesCollide(event1, event2) && hasOverlappingAthletes(event1, event2)) {
-                    System.out.println("Collision at: " + event1.station + " " + event1.stationIndex + " Other event: " + event2.station + " " + event2.stationIndex);
-                    System.out.println("Participants: " + event1.participants.toString() + " Other event: " + event2.participants.toString());
-                    System.out.println("Times: " + event1.startTime + " - " + event1.endTime + " Other event: " + event2.startTime + " - " + event2.endTime);
-                }
-            }
-        }
+        checkAllCollision();
         System.out.println("\n");
 
         return schedule;
