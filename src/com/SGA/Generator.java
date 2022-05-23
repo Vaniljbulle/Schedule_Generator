@@ -22,6 +22,7 @@ public class Generator {
             case HIGHJUMPING -> Station.HIGHJUMP;
             case POLEJUMPING -> Station.POLEVAULT;
             case THROWING -> Station.SHOTTHROWING;
+            case AWARD -> Station.AWARDCEREMONYAREA;
         };
 
     }
@@ -125,6 +126,39 @@ public class Generator {
         }
     }
 
+    private void addAwardCeremonies(HashMap<Station, Vector<Vector<Event>>> schedule, Athlete[] athletes) {
+        for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
+            for (HashMap<CompetitionType, Competition> sex : age.values()) {
+                for (Competition type : sex.values()) {
+                    Event event = new Event();
+
+                    event.startTime = allEvents.lastElement().endTime;
+                    event.duration = 5;
+                    event.endTime = event.startTime + event.duration;
+
+                    int firstAthleteIndex = type.athleteIds.get(0);
+
+                    event.ageGroup = getAgeGroup(athletes[firstAthleteIndex].getAge());
+                    event.station = Station.AWARDCEREMONYAREA;
+                    event.competitionType = CompetitionType.AWARD;
+                    event.stationIndex = 0;
+
+                    if (athletes[firstAthleteIndex].getAge() < 15) {
+                        event.sexCategory = SexCategory.Both;
+                    } else {
+                        event.sexCategory = athletes[firstAthleteIndex].getSex();
+                    }
+
+                    findAvailablePosition(event);
+
+                    schedule.get(Station.AWARDCEREMONYAREA).get(0).add(event);
+                    allEvents.add(event);
+                    sortEvents(allEvents);
+                }
+            }
+        }
+    }
+
     // Calculates groups and duration for all competitions
     private void initialiseCompetitions(Athlete[] athletes) {
         for (HashMap<SexCategory, HashMap<CompetitionType, Competition>> age : competitions.values()) {
@@ -182,6 +216,7 @@ public class Generator {
             case HIGHJUMPING -> new JumpingHigh();
             case POLEJUMPING -> new JumpingPole();
             case THROWING -> new Throwing();
+            case AWARD -> null;
         };
     }
 
@@ -232,6 +267,7 @@ public class Generator {
             // Getting the previous results from the competitor
             HashMap<CompetitionType, Double> results = athlete.getCompetitionResults();
             for (CompetitionType key : CompetitionType.values()) {
+                if (key == CompetitionType.AWARD) continue;
                 Double result = results.get(key);
                 // -1 means they do not compete in this competition
                 if (result != -1) {
@@ -277,6 +313,7 @@ public class Generator {
         initialiseStations(schedule);
         System.out.println("Stations initialized");
         addAllEvents(schedule, athletes);
+        addAwardCeremonies(schedule, athletes);
         System.out.println("Events initialized");
 
         System.out.println("\nCollision test initialized");
