@@ -96,6 +96,14 @@ public class Generator {
 
     private void moveIfOverlap(Event newEvent) {
         for (Event event : allEvents) {
+            if (newEvent.endTime % oneDayInMinutes > lunchStartTime && newEvent.startTime % oneDayInMinutes < lunchStartTime + 60) {
+                newEvent.startTime = newEvent.startTime - (newEvent.startTime % oneDayInMinutes) + lunchStartTime + 60;
+                newEvent.endTime = newEvent.startTime + newEvent.duration;
+            }
+            if (newEvent.endTime % oneDayInMinutes > endTimeOfTheDay || newEvent.startTime % oneDayInMinutes < startTimeOfTheDay) {
+                newEvent.startTime = newEvent.startTime - (newEvent.startTime % oneDayInMinutes) + oneDayInMinutes + startTimeOfTheDay;
+                newEvent.endTime = newEvent.startTime + newEvent.duration;
+            }
             if (getCompetitionStation(event.competitionType) == getCompetitionStation(newEvent.competitionType)) {
                 if (doesCollide(event, newEvent) || (event.priorityIndex < newEvent.priorityIndex && event.startTime > newEvent.endTime)) {
                     if (event.stationIndex == newEvent.stationIndex) {

@@ -65,14 +65,15 @@ public class Scheduler {
         int[] time = {0, 0, 0};
 
         // 17:00
-        int endTimeOfTheDay = 1020;
+        /*int endTimeOfTheDay = 1020;
         while (timeInMinutes > endTimeOfTheDay) {
             time[0]++;
             // 7:00
             int startTimeOfTheDay = 420;
             timeInMinutes -= (endTimeOfTheDay - startTimeOfTheDay);
-        }
-        time[1] = timeInMinutes / 60;
+        }*/
+        time[0] = timeInMinutes / 1440;
+        time[1] = (timeInMinutes / 60) % 24;
         time[2] = timeInMinutes % 60;
 
         //System.out.println("Day = " + time[0] + " Time " + time[1] + ":" +time[2]);
@@ -213,6 +214,7 @@ public class Scheduler {
 //                timeEnd = translateTime(event.get(i).endTime);
 //            }
 
+            /*
             event.get(i).startTime += 60 * timeStart[0];
             event.get(i).endTime += 60 * timeStart[0];
             timeStart = translateTime(event.get(i).startTime);
@@ -230,7 +232,7 @@ public class Scheduler {
                 //delaySchedule(61 - timeStart[2]);
                 timeStart = translateTime(event.get(i).startTime);
                 timeEnd = translateTime(event.get(i).endTime);
-            }
+            }*/
 
             row.append("D").append(timeStart[0]).append("-").append(String.format("%02d", timeStart[1])).append(":").append(String.format("%02d", timeStart[2])).append("-");
             row.append(String.format("%02d", timeEnd[1])).append(":").append(String.format("%02d", timeEnd[2])).append("-");
