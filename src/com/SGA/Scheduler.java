@@ -77,18 +77,22 @@ public class Scheduler {
 
     /*
      *  Cell style for the table
-     *  DZ-XX:XX-YY:YY-()
+     *  DZ-XX:XX-YY:YY-()-C-B
      *  Z = Day
      *  X = Start time
      *  Y = End time
      *  () = Participants ID (Multiple participants delimited by ';')
+     *  C = Competition type
+     *  B = Competition setting (0 if there is no setting to be set)
      *
-     *  Example: D1-13:37-13:38-(57;108;)
+     *  Example: D1-13:37-13:38-(57;108;)-RUNNING60-0
      *  D1 = Day 1
      *  13:37 = Start time
      *  13:38 = End time
      *  57 = Participant 1
      *  108 = Participant 2
+     *  RUNNING60 = Sprint, 60m
+     *  0 = No setting (e.g bar height)
      */
     private String generateCSV() {
         // Sort competitions
@@ -175,7 +179,13 @@ public class Scheduler {
             for (int j = 0; j < event.get(i).participants.size(); j++) {
                 row.append(event.get(i).participants.get(j)).append(";");
             }
-            row.append(")");
+            row.append(")-(");
+
+            // Competition type
+            row.append(event.get(i).competitionType).append(")");
+
+            row.append("-");
+            row.append(event.get(i).barHeight);
         } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
