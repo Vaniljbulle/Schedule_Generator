@@ -1,21 +1,28 @@
 package com.SGA;
 
-import java.util.Scanner;
+import java.util.Vector;
 
 public class Main {
-    public static void main(String[] args) {
-        Scheduler scheduler = new Scheduler();
-        /*
-        // API Input and output
-        Scanner input = new Scanner(System.in);
-        System.out.println("\n\n\n======================= SGA SCHEDULE GENERATOR =======================");
-        System.out.println("\nPlease, enter the name of the input data file without any extension: ");
-        String fileName = input.nextLine();
 
-        System.out.println("Please, enter the name of the output file: ");
-        String destFile = input.nextLine();
-        System.out.println("\n======================================================================\n\n\n");
-        */
-        scheduler.generateSchedule("registration-list.csv", "out.csv");
+    public static void main(String[] args) {
+
+        Scheduler scheduler = new Scheduler();
+        scheduler.generateSchedule("registration-list.csv");
+
+        //testFileHandler();
     }
+
+    // Not a unit test, but a test to see if the file handler works
+    private static void testFileHandler() {
+        FileHandler fileHandler = new FileHandler();
+        fileHandler.readFileFromPath("registration-list.csv");
+        String raw = fileHandler.getFileContent();
+        System.out.println(raw);
+
+        fileHandler.writeFileToPath("out.csv", "test");
+        fileHandler.writeFileToPath("duplicate.csv", raw);
+
+    }
+
+
 }
