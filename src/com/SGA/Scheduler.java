@@ -77,16 +77,16 @@ public class Scheduler {
 
     /*
      *  Cell style for the table
-     *  DZ-XX:XX-YY:YY-()-C-B
-     *  Z = Day
+     *  D-XX:XX-YY:YY-()-C-B
+     *  D = Day
      *  X = Start time
      *  Y = End time
      *  () = Participants ID (Multiple participants delimited by ';')
      *  C = Competition type
      *  B = Competition setting (0 if there is no setting to be set)
      *
-     *  Example: D1-13:37-13:38-(57;108;)-RUNNING60-0
-     *  D1 = Day 1
+     *  Example: 1-13:37-13:38-(57;108;)-RUNNING60-0
+     *  1 = Day 1
      *  13:37 = Start time
      *  13:38 = End time
      *  57 = Participant 1
@@ -171,7 +171,7 @@ public class Scheduler {
             timeStart = translateTime(event.get(i).startTime);
             timeEnd = translateTime(event.get(i).endTime);
 
-            row.append("D").append(timeStart[0]).append("-").append(String.format("%02d", timeStart[1])).append(":").append(String.format("%02d", timeStart[2])).append("-");
+            row.append(timeStart[0]).append("-").append(String.format("%02d", timeStart[1])).append(":").append(String.format("%02d", timeStart[2])).append("-");
             row.append(String.format("%02d", timeEnd[1])).append(":").append(String.format("%02d", timeEnd[2])).append("-");
 
             // Participants
