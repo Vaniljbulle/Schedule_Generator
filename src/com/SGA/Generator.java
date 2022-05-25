@@ -307,18 +307,18 @@ public class Generator {
 
     public HashMap<Station, Vector<Vector<Event>>> generate(HashMap<Station, Vector<Vector<Event>>> schedule, Athlete[] athletes) {
         fillCompetitions(athletes);
-        System.out.println("Competitions filled after");
+        //System.out.println("Competitions filled after");
         initialiseCompetitions(athletes);
-        System.out.println("Competitions initialized");
+        //System.out.println("Competitions initialized");
         initialiseStations(schedule);
-        System.out.println("Stations initialized");
+        //System.out.println("Stations initialized");
         addAllEvents(schedule, athletes);
         addAwardCeremonies(schedule, athletes);
-        System.out.println("Events initialized");
+        //System.out.println("Events initialized");
 
-        System.out.println("\nCollision test initialized");
+        //System.out.println("\nCollision test initialized");
         checkAllCollision();
-        System.out.println("\n");
+        //System.out.println("\n");
 
         return schedule;
     }

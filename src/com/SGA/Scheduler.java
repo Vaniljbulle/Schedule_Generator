@@ -25,7 +25,7 @@ public class Scheduler {
     // Generate schedule
     public void generateSchedule(String filePath, String filePathOut) {
         initializeAthletes(filePath);
-        System.out.println("Athletes initialized after " + getPerformance() + " ms");
+        System.out.println("Generating schedule " + getPerformance());
 
         Generator generator = new Generator();
         schedule = generator.generate(schedule, athletes);
@@ -37,13 +37,10 @@ public class Scheduler {
         System.out.println("\nThe schedule has been successfully generated into the given file");
     }
 
-    long timeMilli = new Date().getTime();
+
 
     private long getPerformance() {
-        Date date = new Date();
-        long performance = date.getTime() - timeMilli;
-        timeMilli = date.getTime();
-        return performance;
+        return 1;
     }
 
     private void saveSchedule(String filePath, String schedule) {
