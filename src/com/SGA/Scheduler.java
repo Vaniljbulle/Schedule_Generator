@@ -10,6 +10,17 @@ public class Scheduler {
     public Scheduler() {
     }
 
+    public void generateSchedule(){
+        Scanner input = new Scanner(System.in);
+        System.out.println("\n\n\n======================= SGA SCHEDULE GENERATOR =======================");
+        System.out.println("\nPlease, enter the name of the input data file without any extension: ");
+        String fileName = input.nextLine();
+        System.out.println("Please, enter the name of the output file: ");
+        String destFile = input.nextLine();
+        System.out.println("\n======================================================================\n\n\n");
+
+        generateSchedule(fileName + ".csv", destFile + ".csv");
+    }
 
     // Generate schedule
     public void generateSchedule(String filePath, String filePathOut) {
@@ -108,7 +119,7 @@ public class Scheduler {
         for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
             // For  each station
             for (int i = 0; i < schedule.get(station).size(); i++) {
-                System.out.println("\n" + station + " " + i);
+                //System.out.println("\n" + station + " " + i);
                 csv.append(station).append("(").append(i).append("),");
             }
         }
