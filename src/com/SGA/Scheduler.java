@@ -2,9 +2,12 @@ package com.SGA;
 
 import java.util.*;
 
+
 public class Scheduler {
     private Athlete[] athletes;
     HashMap<Station, Vector<Vector<Event>>> schedule = new HashMap<>();
+
+    private final int scheduleCounter = 10;
 
     // Constructor
     public Scheduler() {
@@ -14,26 +17,32 @@ public class Scheduler {
     // Generate schedule
     public void generateSchedule(String filePath, String filePathOut) {
         initializeAthletes(filePath);
-        System.out.println("Athletes initialized after " + getPerformance() + " ms");
 
-        Generator generator = new Generator();
-        schedule = generator.generate(schedule, athletes);
-        String schedule = generateCSV();
-        System.out.println("CSV generated");
-        saveSchedule(filePathOut, schedule);
-        System.out.println("CSV saved");
+        for (int i = 0; i < scheduleCounter; i++) {
+            System.out.println("Generating schedule " + (i + 1) + " of " + scheduleCounter);
+            Generator generator = new Generator();
+            HashMap<Station, Vector<Vector<Event>>> temp = new HashMap<>();
+            temp = generator.generate(temp, athletes);
+            if (generator.getColissionCounter() == 0) {
+                System.out.println("Found schedule after " + (i+1) + " attempts");
+                schedule.putAll(temp);
+                break;
+            }
+        }
+        if (schedule.isEmpty()) {
+            System.out.println("No schedule found");
+        } else {
+            String schedule = generateCSV();
+            System.out.println("CSV generated");
+            saveSchedule(filePathOut, schedule);
+            System.out.println("CSV saved");
 
-        System.out.println("\nThe schedule has been successfully generated into the given file");
+            System.out.println("\nThe schedule has been successfully generated into the given file");
+        }
+
+
     }
 
-    long timeMilli = new Date().getTime();
-
-    private long getPerformance() {
-        Date date = new Date();
-        long performance = date.getTime() - timeMilli;
-        timeMilli = date.getTime();
-        return performance;
-    }
 
     private void saveSchedule(String filePath, String schedule) {
         FileHandler f = new FileHandler();
@@ -108,7 +117,7 @@ public class Scheduler {
         for (Station station : Arrays.asList(Station.RUNNINGCIRCLE, Station.LONGTRIPLEJUMP, Station.HIGHJUMP, Station.SHOTTHROWING, Station.POLEVAULT, Station.SPRINTLINE, Station.AWARDCEREMONYAREA)) {
             // For  each station
             for (int i = 0; i < schedule.get(station).size(); i++) {
-                System.out.println("\n" + station + " " + i);
+                //System.out.println("\n" + station + " " + i);
                 csv.append(station).append("(").append(i).append("),");
             }
         }

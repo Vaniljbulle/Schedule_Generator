@@ -13,6 +13,8 @@ public class Generator {
     private final int endTimeOfTheDay = 1020; // 17:00
     private final int oneDayInMinutes = 1440; // 24:00
 
+    private int colissionCounter = 0;
+
     // Returns the station that fits the CompetitionType
     private Station getCompetitionStation(CompetitionType type) {
         return switch (type) {
@@ -25,6 +27,11 @@ public class Generator {
             case AWARD -> Station.AWARDCEREMONYAREA;
         };
 
+    }
+
+    // Getter for colission
+    public int getColissionCounter() {
+        return colissionCounter;
     }
 
     // Returns whether the event times collide
@@ -297,9 +304,10 @@ public class Generator {
             for (Event event2 : allEvents) {
                 if (event1 == event2) continue;
                 if (doesCollide(event1, event2) && hasOverlappingAthletes(event1, event2)) {
-                    System.out.println("Collision at: " + event1.station + " " + event1.stationIndex + " Other event: " + event2.station + " " + event2.stationIndex);
-                    System.out.println("Participants: " + event1.participants.toString() + " Other event: " + event2.participants.toString());
-                    System.out.println("Times: " + event1.startTime + " - " + event1.endTime + " Other event: " + event2.startTime + " - " + event2.endTime);
+                    //System.out.println("Collision at: " + event1.station + " " + event1.stationIndex + " Other event: " + event2.station + " " + event2.stationIndex);
+                    //System.out.println("Participants: " + event1.participants.toString() + " Other event: " + event2.participants.toString());
+                    //System.out.println("Times: " + event1.startTime + " - " + event1.endTime + " Other event: " + event2.startTime + " - " + event2.endTime);
+                    colissionCounter++;
                 }
             }
         }
@@ -307,18 +315,18 @@ public class Generator {
 
     public HashMap<Station, Vector<Vector<Event>>> generate(HashMap<Station, Vector<Vector<Event>>> schedule, Athlete[] athletes) {
         fillCompetitions(athletes);
-        System.out.println("Competitions filled after");
+        //System.out.println("Competitions filled");
         initialiseCompetitions(athletes);
-        System.out.println("Competitions initialized");
+        //System.out.println("Competitions initialized");
         initialiseStations(schedule);
-        System.out.println("Stations initialized");
+        //System.out.println("Stations initialized");
         addAllEvents(schedule, athletes);
         addAwardCeremonies(schedule, athletes);
-        System.out.println("Events initialized");
+       // System.out.println("Events initialized");
 
-        System.out.println("\nCollision test initialized");
+       // System.out.println("\nCollision test initialized");
         checkAllCollision();
-        System.out.println("\n");
+        //System.out.println("\n");
 
         return schedule;
     }
