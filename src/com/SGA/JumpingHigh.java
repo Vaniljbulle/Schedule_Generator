@@ -7,7 +7,7 @@ public class JumpingHigh extends Competition {
     private Vector<Double> personalRecords = new Vector<>();
     private Vector<Integer> barHeights = new Vector<>();
     private final double recordMultiplier = 1.1;
-    private double startHeight = 20; // High value so it will definitely override the value in calculateGroups
+    private double startHeight = 20; // High value, so it will definitely override the value in calculateGroups
     private final double lowestMultiplier = 0.9;
 
     @Override
@@ -31,8 +31,6 @@ public class JumpingHigh extends Competition {
             if (increment < 5) increment = 5;
             Vector<Vector<Integer>> groups = new Vector<>();
             for (int k = 0; k < athleteIds.size(); k++) {
-                //int slightlyAboveRecord = (int) (personalRecords.get(k) * recordMultiplier * 100.0);
-                //if (slightlyAboveRecord < i) continue;
                 Vector<Integer> group = new Vector<>();
                 group.add(athleteIds.get(k));
                 groups.add(group);

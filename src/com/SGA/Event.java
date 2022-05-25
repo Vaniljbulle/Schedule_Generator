@@ -26,18 +26,4 @@ public class Event {
         }
         return s;
     }
-
-    public void printCompetitionsInformation(){
-        System.out.println("Competitions Type : " + this.competitionType);
-        System.out.println("Station           : " + this.station);
-        System.out.println("Station index     : " + this.stationIndex);
-        System.out.println("start time        : " + this.startTime);
-        System.out.println("End Time          : " + this.endTime);
-        System.out.println("Duration          : " + this.duration);
-        System.out.println("AgeGroup          : " + this.ageGroup);
-        System.out.println("Sex               : " + this.sexCategory);
-        System.out.println("Nr Of Athletes    : " + this.participants.size());
-    }
-
-
 }
